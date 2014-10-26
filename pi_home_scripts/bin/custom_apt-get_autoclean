@@ -1,0 +1,44 @@
+#!/bin/bash
+
+tot1=`ls /var/cache/apt/archives | grep -c deb`
+
+echo $(basename $0)
+echo ========================
+echo "executing apt-get autoclean & apt-get autoremove ..."
+sleep 1
+echo "===" && sudo apt-get autoclean && echo "===" && sudo apt-get autoremove && echo "==="
+
+echo installed packages back-up...
+sleep 1
+cd /var/cache/apt/archives
+sudo mkdir cache-backup
+
+for c in `ls | sed 's/_.*//'`; 
+    do for s in `dpkg --get-selections`;
+        do case $c in
+            $s) echo backing-up $c && sudo cp -r $c*deb --target-directory=cache-backup;
+        esac 
+    done
+done
+
+sleep 1
+tot2=`ls /var/cache/apt/archives | grep -c deb`
+bup=`ls /var/cache/apt/archives/cache-backup | grep -c deb`
+echo ---------------------------
+echo "total packages in cache:                $tot1"
+echo "packages after autoclean/autoremove:    $tot2"
+echo "installed packages to retain in cache:  $bup"
+echo ---------------------------
+sleep 1
+echo removing entire cache...
+sudo rm *.deb
+sleep 1
+
+echo restoring backed-up packages...
+sudo cp /var/cache/apt/archives/cache-backup/*.deb /var/cache/apt/archives
+sudo rm -r /var/cache/apt/archives/cache-backup
+sleep 1
+
+echo closing...
+sleep 1
+exit
