@@ -28,10 +28,11 @@ sudo servod --p1pins=11,15 --cycle-time=20000us --step-size=10us --min=10us --ma
 echo $sep
 
 # Clean other logs
-echo -e "Cleaning lid-fan log\n>>>"
+echo -e "Cleaning logs\n>>>"
 #rm -v /home/pi/log/last_temp
 rm -v /home/pi/log/last_fan_step
 rm -v /home/pi/log/last_t8-status
+rm -v /home/pi/log/last_night-led_level
 echo $sep
 
 # Lid cooling fan to 100% for test

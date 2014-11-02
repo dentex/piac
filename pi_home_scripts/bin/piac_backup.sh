@@ -6,7 +6,7 @@ SC=`basename $0`
 TMP_DIR="/tmp/"
 DATE=$(date +"%d-%m-%Y_%H%M")
 BKP_FILE="$TMP_DIR/piac_backup_$DATE.tar"
-BKP_DIRS="/home/pi /etc /var/spool/cron"
+BKP_DIRS="/home/pi/bin /etc /var/spool/cron"
 DROPBOX_UPLOADER=/home/pi/GIT/Dropbox-Uploader/dropbox_uploader.sh
 
 echo "[$(date '+%x %X')] [$SC] Creating backup."
