@@ -14,6 +14,17 @@ echo "        <<< $(date) >>>"
 echo "******************************************************"
 echo ""
 
+# add some delay
+sleep 40
+
+# Clean other logs
+echo -e "Cleaning logs\n>>>"
+#rm -v /home/pi/log/last_temp
+rm -v /home/pi/log/last_fan_step
+rm -v /home/pi/log/last_t8-status
+rm -v /home/pi/log/last_night-led_level
+echo $sep
+
 # Init relays' GPIO pins
 echo -e "Initializing relays' GPIO pins\n>>>"
 for pin in 18 23 24 25; do
@@ -25,14 +36,6 @@ echo $sep
 # Init servod
 echo -e "Initializing servod\n>>>"
 sudo servod --p1pins=11,15 --cycle-time=20000us --step-size=10us --min=10us --max 20000us
-echo $sep
-
-# Clean other logs
-echo -e "Cleaning logs\n>>>"
-#rm -v /home/pi/log/last_temp
-rm -v /home/pi/log/last_fan_step
-rm -v /home/pi/log/last_t8-status
-rm -v /home/pi/log/last_night-led_level
 echo $sep
 
 # Lid cooling fan to 100% for test

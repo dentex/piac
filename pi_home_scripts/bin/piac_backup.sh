@@ -9,22 +9,32 @@ BKP_FILE="$TMP_DIR/piac_backup_$DATE.tar"
 BKP_DIRS="/home/pi/bin /etc /var/spool/cron"
 DROPBOX_UPLOADER=/home/pi/GIT/Dropbox-Uploader/dropbox_uploader.sh
 
-echo "[$(date '+%x %X')] [$SC] Creating backup."
-tar cf "$BKP_FILE" $BKP_DIRS > /dev/null
+function checknetwork {
+  ping -c 1 google.it > /dev/null
+  if [ "$?" -ne 0 ]; then
+    echo "[$(date '+%x %X')] [$SC] No network connection. Aborting backup. [$C]" >> $LOG 2>&1 #TODO Retry
+    exit 1
+  fi
+}
 
-echo "[$(date '+%x %X')] [$SC] Compressing backup."
-gzip "$BKP_FILE"
+function dobackup {
+  echo "[$(date '+%x %X')] [$SC] Creating backup."
+  tar cf "$BKP_FILE" $BKP_DIRS > /dev/null
 
-echo "[$(date '+%x %X')] [$SC] Starting to upload..."
-$DROPBOX_UPLOADER -f /home/pi/.dropbox_uploader upload "$BKP_FILE.gz" / > /dev/null
+  echo "[$(date '+%x %X')] [$SC] Compressing backup."
+  gzip "$BKP_FILE"
 
-# Check result
-if (( $? )); then
-	echo "[$(date '+%x %X')] [$SC] Error uploading backup file."
-else
+  echo "[$(date '+%x %X')] [$SC] Starting to upload..."
+  $DROPBOX_UPLOADER -f /home/pi/.dropbox_uploader upload "$BKP_FILE.gz" / > /dev/null
 
-	echo "[$(date '+%x %X')] [$SC] Success. Cleaning up and closing."
-	rm -fr "$BKP_FILE.gz"
-fi
+  # Check result
+  if (( $? )); then
+	  echo "[$(date '+%x %X')] [$SC] Error uploading backup file."
+  else
+	  echo "[$(date '+%x %X')] [$SC] Success. Cleaning up and closing."
+	  rm -fr "$BKP_FILE.gz"
+  fi
+}
 
-
+checknetwork
+dobackup
