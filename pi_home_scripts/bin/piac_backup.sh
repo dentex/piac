@@ -1,29 +1,69 @@
 #!/bin/bash
 
-# This script name
 SC=`basename $0`
+BKP_FILE="/mnt/DATA/piac_backup.tar"
+#BKP_FILE="/tmp/piac_backup.tar"
+BKP_DIR="/mnt/DATA/piac_backup"
 
-TMP_DIR="/tmp/"
-DATE=$(date +"%d-%m-%Y_%H%M")
-BKP_FILE="$TMP_DIR/piac_backup_$DATE.tar"
-BKP_DIRS="/home/pi/bin /etc /var/spool/cron"
+# Backup folders
+HOME_BIN="/home/pi/bin"
+HOME_LOG="/home/pi/log"
+ETC="/etc"
+CRON="/var/spool/cron"
+
+# No network tmp flag
+NNF="/tmp/$SC.nonet"
+
+# dropbox_uploader script
 DROPBOX_UPLOADER=/home/pi/GIT/Dropbox-Uploader/dropbox_uploader.sh
 
-function checknetwork {
+# Removing the "." from the script name inside `/etc/cron.hourly`, due to run-parts be choosy about file names
+H_SC=`echo $SC | cut -d . -f 1`
+H_SC_PATH="/etc/cron.hourly/$H_SC"
+
+function remove_cron_hourly_if_present {
+  [ -f $H_SC_PATH ] && rm -f $H_SC_PATH
+}
+
+function backup_and_compress {
+  echo "[$(date '+%x %X')] [$SC] Creating backup."
+  START=$(date +%s)
+#  rsync -aAX --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /* "$BKP_DIR"
+
+  mkdir -p $BKP_DIR/$HOME_BIN/ $BKP_DIR/$ETC/ $BKP_DIR/$CRON/ $BKP_DIR/$HOME_LOG
+
+  echo -e "$HOME_BIN\n----------------------------------" > $BKP_DIR/CHANGES
+  rsync -aAXi --delete $HOME_BIN/* $BKP_DIR/$HOME_BIN >> $BKP_DIR/CHANGES
+  echo -e "\n$HOME_LOG\n----------------------------------" > $BKP_DIR/CHANGES
+  rsync -aAXi --delete $HOME_LOG/* $BKP_DIR/$HOME_LOG >> $BKP_DIR/CHANGES
+  echo -e "\n$ETC\n----------------------------------" >> $BKP_DIR/CHANGES
+  rsync -aAXi --delete $ETC/* $BKP_DIR/$ETC >> $BKP_DIR/CHANGES
+  echo -e "\n$CRON\n----------------------------------" >> $BKP_DIR/CHANGES
+  rsync -aAXi --delete $CRON/* $BKP_DIR/$CRON >> $BKP_DIR/CHANGES
+
+  tar -p -cf "$BKP_FILE" $BKP_DIR > /dev/null
+
+  echo "[$(date '+%x %X')] [$SC] Compressing backup."
+  gzip -9 -f "$BKP_FILE"
+
+  FINISH=$(date +%s)
+  echo "[$(date '+%x %X')] [$SC] Backup total time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds" | tee $BKP_DIR/BACKUP-DATE
+}
+
+function check_network {
   ping -c 1 google.it > /dev/null
   if [ "$?" -ne 0 ]; then
-    echo "[$(date '+%x %X')] [$SC] No network connection. Aborting backup. [$C]" >> $LOG 2>&1 #TODO Retry
+    echo "[$(date '+%x %X')] [$SC] No network connection. Aborting upload. Re-scheduling next hour [$C]"
+    # Adding a no network `lock` file
+    touch $NNF
+    # Re-scheduling
+    cp $HOME_BIN/$SC $H_SC_PATH
+    chmod 777 $H_SC_PATH
     exit 1
   fi
 }
 
-function dobackup {
-  echo "[$(date '+%x %X')] [$SC] Creating backup."
-  tar cf "$BKP_FILE" $BKP_DIRS > /dev/null
-
-  echo "[$(date '+%x %X')] [$SC] Compressing backup."
-  gzip "$BKP_FILE"
-
+function upload {
   echo "[$(date '+%x %X')] [$SC] Starting to upload..."
   $DROPBOX_UPLOADER -f /home/pi/.dropbox_uploader upload "$BKP_FILE.gz" / > /dev/null
 
@@ -36,5 +76,10 @@ function dobackup {
   fi
 }
 
-checknetwork
-dobackup
+remove_cron_hourly_if_present
+[ -f $NNF ] || backup_and_compress
+check_network
+upload
+[ -f $NNF ] && rm -f $NNF
+exit 0
+

@@ -21,7 +21,7 @@ STEP_6_T="64"
 P="normal"
 
 # Quiter profile temperature steps increment
-qi=5
+qi=3
 
 # Hour of the day
 H=`date +%H`

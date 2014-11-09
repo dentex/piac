@@ -15,7 +15,7 @@ echo "******************************************************"
 echo ""
 
 # add some delay
-sleep 40
+sleep 30
 
 # Clean other logs
 echo -e "Cleaning logs\n>>>"
