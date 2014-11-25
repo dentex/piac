@@ -96,7 +96,11 @@ function change_fan_speed {
   echo "[$(date '+%x %X')] [$SC] CPU temp is $CPU_TEMP_I.$CPU_TEMP_M°C"
   echo "[$(date '+%x %X')] [$SC] [$P profile] Setting lid fan speed to $CURR_SPEED"
   echo 1=$CURR_SPEED > /dev/servoblaster
-  echo $CURR_SPEED > $FAN_STEP_LOG
+  if [ "$?" -eq 0 ]; then
+    echo $CURR_SPEED > $FAN_STEP_LOG
+  else
+    echo "[$(date '+%x %X')] [$SC] [$P profile] Failed."
+  fi
 }
 
 check_fan_speed

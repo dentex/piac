@@ -21,13 +21,15 @@ DROPBOX_UPLOADER=/home/pi/GIT/Dropbox-Uploader/dropbox_uploader.sh
 H_SC=`echo $SC | cut -d . -f 1`
 H_SC_PATH="/etc/cron.hourly/$H_SC"
 
+START=$(date +%s)
+
 function remove_cron_hourly_if_present {
   [ -f $H_SC_PATH ] && rm -f $H_SC_PATH
 }
 
 function backup_and_compress {
   echo "[$(date '+%x %X')] [$SC] Creating backup."
-  START=$(date +%s)
+
 #  rsync -aAX --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /* "$BKP_DIR"
 
   mkdir -p $BKP_DIR/$HOME_BIN/ $BKP_DIR/$ETC/ $BKP_DIR/$CRON/ $BKP_DIR/$HOME_LOG
@@ -45,13 +47,10 @@ function backup_and_compress {
 
   echo "[$(date '+%x %X')] [$SC] Compressing backup."
   gzip -9 -f "$BKP_FILE"
-
-  FINISH=$(date +%s)
-  echo "[$(date '+%x %X')] [$SC] Backup total time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds" | tee $BKP_DIR/BACKUP-DATE
 }
 
 function check_network {
-  ping -c 1 google.it > /dev/null
+  ping -c 1 -w 3 google.it > /dev/null 2>&1
   if [ "$?" -ne 0 ]; then
     echo "[$(date '+%x %X')] [$SC] No network connection. Aborting upload. Re-scheduling next hour [$C]"
     # Adding a no network `lock` file
@@ -81,5 +80,9 @@ remove_cron_hourly_if_present
 check_network
 upload
 [ -f $NNF ] && rm -f $NNF
+
+FINISH=$(date +%s)
+echo "[$(date '+%x %X')] [$SC] Backup total time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds" | tee $BKP_DIR/BACKUP-DATE
+
 exit 0
 

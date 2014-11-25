@@ -24,11 +24,12 @@
 PATH=/home/pi/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PIAC_LOG=/home/pi/log/piac.log
 
-05 20 * * * piac_backup.sh >> $PIAC_LOG 2>&1
+40 20 * * * piac_backup.sh >> $PIAC_LOG 2>&1
 
 */5 * * * * sleep 20 && ngrok_checker.sh >> $PIAC_LOG 2>&1
 10 23 * * * sleep 20 && ngrok_killer.sh >> $PIAC_LOG 2>&1
 
-*/5 * * * * sleep 10 && lid-fan_manager.sh >> $PIAC_LOG 2>&1
+*/5 * * * * sleep 10 && lid_fan_manager.sh >> $PIAC_LOG 2>&1
 
 * * * * * lights_manager.sh >> $PIAC_LOG 2>&1
+* * * * * dweet_to_freeboard.sh > /dev/null 2>&1

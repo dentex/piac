@@ -19,18 +19,11 @@ sleep 30
 
 # Clean other logs
 echo -e "Cleaning logs\n>>>"
-#rm -v /home/pi/log/last_temp
+#rm -v /home/pi/log/last_water_temp
 rm -v /home/pi/log/last_fan_step
-rm -v /home/pi/log/last_t8-status
-rm -v /home/pi/log/last_night-led_level
-echo $sep
-
-# Init relays' GPIO pins
-echo -e "Initializing relays' GPIO pins\n>>>"
-for pin in 18 23 24 25; do
-  echo "Exporting pin $pin as output"
-  gpio export $pin out
-done
+rm -v /home/pi/log/last_t8_status
+rm -v /home/pi/log/last_co2_status
+rm -v /home/pi/log/last_night_leds_level
 echo $sep
 
 # Init servod
@@ -44,4 +37,12 @@ echo 1=100% > /dev/servoblaster
 sleep 10
 echo 1=0 > /dev/servoblaster
 echo "Done."
+echo $sep
+
+# Init relays' GPIO pins
+echo -e "Initializing relays' GPIO pins\n>>>"
+for pin in 18 23 24 25; do
+  echo "Exporting pin $pin as output"
+  /usr/local/bin/gpio export $pin out
+done
 echo $sep

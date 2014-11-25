@@ -19,8 +19,8 @@ function sendMail {
     NONET=false
     echo "[$(date '+%x %X')] [$SC] Sending post-up email... [$C]"
     source /home/pi/bin/compose_mail_body.sh .
-    #cat /home/pi/log/post-up_mail_body | mail --debug-level=15 -s "INFO" samuele.rini76@gmail.com
-    cat /home/pi/log/post-up_mail_body | mail -s "INFO" samuele.rini76@gmail.com > /dev/null
+    #cat /home/pi/log/post_up_mail_body | mail --debug-level=15 -s "INFO" samuele.rini76@gmail.com
+    cat /home/pi/log/post_up_mail_body | mail -s "INFO" samuele.rini76@gmail.com > /dev/null
   else
     echo "[$(date '+%x %X')] [$SC] No network connection. [$C]"
     NONET=true
