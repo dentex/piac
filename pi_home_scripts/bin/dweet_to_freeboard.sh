@@ -10,7 +10,7 @@ function check_network {
   fi
 }
 
-function get_temp {
+function getCpuTemp {
   CPU_TEMP=$(cat /sys/class/thermal/thermal_zone0/temp)
   CPU_TEMP_I=$(($CPU_TEMP/1000))
   CPU_TEMP_D=$(($CPU_TEMP/100))
@@ -20,7 +20,8 @@ function get_temp {
 }
 
 function cats {
-  cputemp=`get_temp`
+  cputemp=`getCpuTemp`
+  watertemp=`/home/pi/bin/get_water_temp.sh`
 
   t8=`cat /home/pi/log/last_t8_status`
   co2=`cat /home/pi/log/last_co2_status`
@@ -30,6 +31,7 @@ function cats {
 
 function dweet {
   curl -d "cpu-temp=$cputemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  curl -d "water-temp=$watertemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "t8-status=$t8" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "co2-status=$co2" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "lid-fan-step=$fan" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1

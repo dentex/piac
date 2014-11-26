@@ -41,12 +41,12 @@ fi
 # Lid fan speed steps
 STEP_0_R="0"
 
-STEP_1_R="50%"
-STEP_2_R="60%"
-STEP_3_R="70%"
-STEP_4_R="80%"
-STEP_5_R="90%"
-STEP_6_R="100%"
+STEP_1_R="50"
+STEP_2_R="60"
+STEP_3_R="70"
+STEP_4_R="80"
+STEP_5_R="90"
+STEP_6_R="100"
 
 # Retrieve SoC temperature
 CPU_TEMP=$(cat /sys/class/thermal/thermal_zone0/temp)
@@ -95,7 +95,15 @@ function check_fan_speed {
 function change_fan_speed {
   echo "[$(date '+%x %X')] [$SC] CPU temp is $CPU_TEMP_I.$CPU_TEMP_M°C"
   echo "[$(date '+%x %X')] [$SC] [$P profile] Setting lid fan speed to $CURR_SPEED"
-  echo 1=$CURR_SPEED > /dev/servoblaster
+
+  if [ "$CURR_SPEED" -eq 0 ]; then
+    val="$CURR_SPEED"
+  else
+    val="$CURR_SPEED%"
+  fi
+
+  echo 1="$val" > /dev/servoblaster
+
   if [ "$?" -eq 0 ]; then
     echo $CURR_SPEED > $FAN_STEP_LOG
   else
