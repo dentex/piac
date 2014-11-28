@@ -10,21 +10,10 @@ function check_network {
   fi
 }
 
-function getCpuTemp {
-  CPU_TEMP=$(cat /sys/class/thermal/thermal_zone0/temp)
-  CPU_TEMP_I=$(($CPU_TEMP/1000))
-  CPU_TEMP_D=$(($CPU_TEMP/100))
-  CPU_TEMP_M=$(($CPU_TEMP_D % $CPU_TEMP_I))
-
-  echo $CPU_TEMP_I.$CPU_TEMP_M
-}
-
 function cats {
-  cputemp=`getCpuTemp`
-  gputemp=`echo $(/opt/vc/bin/vcgencmd measure_temp) | grep -oE '[0-9][0-9].[0-9]'`
-
-  watertemp=`/home/pi/bin/get_water_temp.sh | grep -oE '[0-9][0-9].[0-9]'`
-
+  cputemp=`/home/pi/bin/get_temp.sh cpu`
+  gputemp=`/home/pi/bin/get_temp.sh gpu`
+  watertemp=`/home/pi/bin/get_temp.sh water`
   t8=`cat /home/pi/log/last_t8_status`
   co2=`cat /home/pi/log/last_co2_status`
   fan=`cat /home/pi/log/last_fan_step`
