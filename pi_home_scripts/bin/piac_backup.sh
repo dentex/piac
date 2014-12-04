@@ -35,13 +35,13 @@ function backup_and_compress {
   mkdir -p $BKP_DIR/$HOME_BIN/ $BKP_DIR/$ETC/ $BKP_DIR/$CRON/ $BKP_DIR/$HOME_LOG
 
   echo -e "$HOME_BIN\n----------------------------------" > $BKP_DIR/CHANGES
-  rsync -aAXi --delete $HOME_BIN/* $BKP_DIR/$HOME_BIN >> $BKP_DIR/CHANGES
+  rsync -aAXi --delete $HOME_BIN/ $BKP_DIR/$HOME_BIN >> $BKP_DIR/CHANGES
   echo -e "\n$HOME_LOG\n----------------------------------" > $BKP_DIR/CHANGES
-  rsync -aAXi --delete $HOME_LOG/* $BKP_DIR/$HOME_LOG >> $BKP_DIR/CHANGES
+  rsync -aAXi --delete $HOME_LOG/ $BKP_DIR/$HOME_LOG >> $BKP_DIR/CHANGES
   echo -e "\n$ETC\n----------------------------------" >> $BKP_DIR/CHANGES
-  rsync -aAXi --delete $ETC/* $BKP_DIR/$ETC >> $BKP_DIR/CHANGES
+  rsync -aAXi --delete $ETC/ $BKP_DIR/$ETC >> $BKP_DIR/CHANGES
   echo -e "\n$CRON\n----------------------------------" >> $BKP_DIR/CHANGES
-  rsync -aAXi --delete $CRON/* $BKP_DIR/$CRON >> $BKP_DIR/CHANGES
+  rsync -aAXi --delete $CRON/ $BKP_DIR/$CRON >> $BKP_DIR/CHANGES
 
   tar -p -cf "$BKP_FILE" $BKP_DIR > /dev/null
 
