@@ -5,7 +5,7 @@ SC=`basename $0`
 # Check if this script is already running
 # http://stackoverflow.com/a/731634/1865860
 if ! mkdir /tmp/$SC.lock 2>/dev/null; then
-  echo "$SC is already running." >&2
+  echo "$SC is already running."
   exit 1
 fi
 

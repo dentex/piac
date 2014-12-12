@@ -1,0 +1,38 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+####################################################
+##############  Pi.A.C. @reboot ####################
+####################################################
+
+PIAC_LOG=/home/pi/log/piac.log
+printf "\n" >> $PIAC_LOG 2>&1
+echo "@@@@ Running rc.local commands:" >> $PIAC_LOG 2>&1
+
+echo "@@@@ Enabling DS1307 RTC" >> $PIAC_LOG 2>&1
+echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
+hwclock -s >> $PIAC_LOG 2>&1
+
+echo "@@@@ Heartbeat through onboard green led" >> $PIAC_LOG 2>&1
+echo heartbeat > /sys/class/leds/led0/trigger
+
+echo "@@@@ Launching initialization script" >> $PIAC_LOG 2>&1
+/home/pi/bin/piac_init.sh >> $PIAC_LOG 2>&1
+
+exit 0

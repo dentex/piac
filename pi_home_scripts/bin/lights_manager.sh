@@ -6,6 +6,10 @@ SC=`basename $0`
 # Debug flag, more verbose
 DEBUG=false
 
+if [ ! -f /tmp/piac_is_configured ]; then
+  exit 1
+fi
+
 # Timetable file
 TT="/home/pi/bin/lights_timetable"
 

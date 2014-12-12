@@ -5,6 +5,13 @@ LOG="/home/pi/log/piac.log"
 #echo "" > $LOG
 chmod 666 $LOG
 
+sleep 10
+# Check if hwclock worked properly
+if [ `date +%Y` -eq 1970 ]; then
+  reboot
+  exit 1
+fi
+
 sep="--------------------------------------------"
 
 echo "******************************************************"
@@ -46,3 +53,6 @@ for pin in 18 23 24 25; do
   /usr/local/bin/gpio export $pin out
 done
 echo $sep
+
+# Flag PiAC as configured
+touch /tmp/piac_is_configured
