@@ -17,7 +17,7 @@ On the software side, this project uses/depends on:
 
 Basically, is then a collection of simple **bash** scripts running with `cron` on a **Raspbian** distribution.
 
-**Please note**: for the time being, this repository is not really useful as an out-of-the-box working project, since it also depends on some Debian packages installed and their configurations. I will be glad to explain further to anyone interested and anyway I'll probably expand the repository with some configuration files from the `/etc` folder.
+**Please note**: this repository may not work out-of-the-box to start a similar project. Some other bits are necessary, since **PiAC** also depends on some Debian packages manually installed and their configurations. I will be glad to explain further to anyone interested and anyway I'm expanding the repository with some configuration files (i.e. from the `/etc` folder).
 
 ##Features
 ####v1.0
@@ -37,3 +37,6 @@ Basically, is then a collection of simple **bash** scripts running with `cron` o
 - Finished mounting the lid cooler fan;
 - Real Time Clock added;
 - rootfs mounted on USB stick.
+
+####TO-DO
+- Support for a LED fixture simulating sunrise/sunset lighting (already in the works).
