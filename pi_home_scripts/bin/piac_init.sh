@@ -35,7 +35,7 @@ echo $sep
 
 # Init servod
 echo -e "Initializing servod\n>>>"
-sudo servod --p1pins=11,15 --cycle-time=20000us --step-size=10us --min=10us --max 20000us
+sudo servod --p1pins=11,15,19,21,23 --cycle-time=5000us --step-size=5us --min=5us --max 5000us
 echo $sep
 
 # Lid cooling fan to 100% for test

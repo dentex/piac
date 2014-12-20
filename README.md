@@ -38,5 +38,9 @@ Basically, is then a collection of simple **bash** scripts running with `cron` o
 - Real Time Clock added;
 - rootfs mounted on USB stick.
 
+####v1.2
+- Manage a DIY LED fixture simulating sunrise/sunset lighting.
+
 ####TO-DO
-- Support for a LED fixture simulating sunrise/sunset lighting (already in the works).
+- Use two DC-DC converters to have 12V (for blue LEDs and fans) and 5V (for the RPi itself) out of the 24V main power supply used for the led fixtures;
+- Power button, to reboot/shutdown the RPi, on the main enclosure.

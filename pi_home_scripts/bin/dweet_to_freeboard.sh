@@ -15,22 +15,30 @@ function cats {
   gputemp=`/home/pi/bin/get_temp.sh gpu`
   watertemp=`/home/pi/bin/get_temp.sh water`
   casetemp=`/home/pi/bin/get_temp.sh case`
-  t8=`cat /home/pi/log/last_t8_status`
   co2=`cat /home/pi/log/last_co2_status`
   fan=`cat /home/pi/log/last_fan_step`
-  leds=`cat /home/pi/log/last_night_leds_level`
+
+  cold=`cat /home/pi/log/last_leds_channel_cold_level`
+  warm=`cat /home/pi/log/last_leds_channel_warm_level`
+  white=`cat /home/pi/log/last_leds_channel_white_level`
+  blue=`cat /home/pi/log/last_leds_channel_blue_level`
 }
 
 function dweet {
   curl -d "status=Running" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+
   curl -d "cpu-temp=$cputemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "gpu-temp=$gputemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  curl -d "case-temp=$casetemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "water-temp=$watertemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  curl -d "t8-status=$t8" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  curl -d "case-temp=$casetemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "co2-status=$co2" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   curl -d "lid-fan-step=$fan" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  curl -d "night-leds-level=$leds" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+
+  curl -d "leds_channel_cold_level=$cold" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  curl -d "leds_channel_warm_level=$warm" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  curl -d "leds_channel_white_level=$white" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  curl -d "leds_channel_blue_level=$blue" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+
   curl -d "last-update=$(date +%T)" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
 }
 
