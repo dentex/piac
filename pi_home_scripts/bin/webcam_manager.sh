@@ -21,7 +21,7 @@ function check_network {
 }
 
 function get_frame {
-  fswebcam -q -r 320x232 -d /dev/video0 $FRAME
+  fswebcam -q -r 320x232 --timestamp "%H:%M:%S     " -d /dev/video0 $FRAME
 
   # Check result
   if (( $? )); then
