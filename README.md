@@ -6,7 +6,7 @@ PiAC
 ##Info
 This is a DIY project to control and monitor some aspects of my fresh-water aquarium.
 
-It uses a Raspberry Pi and some hardware to control/monitor four mains sockets, a blue LED strip, two cooling fans and two temperature probes. Some schematics are available in the *hardware_info* folder, although I didn't include the *mains* wiring: it's just the four sockets closed by four relays and the wiring towards the two power supplies, 12V and 4.5V.
+It uses a Raspberry Pi and some hardware to control/monitor some mains sockets, a blue LED strip, a custom-built LED fixture (actually four spotlights) two cooling fans and two temperature probes. Some schematics are available in the *hardware_info* folder, although I didn't include some *mains* wiring: it's just the four sockets closed by four relays and the wiring towards the two power supplies, 12V and 4.5V (this will change soon for a new revision, that will include a couple of buck-converters to have 12V and 5V from the 24V power supply now in use for the main LEDs).
 
 On the software side, this project uses/depends on:
 - https://github.com/richardghirst/PiBits/tree/master/ServoBlaster *(hybrid hardware/software PWM)*
@@ -39,8 +39,9 @@ Basically, is then a collection of simple **bash** scripts running with `cron` o
 - rootfs mounted on USB stick.
 
 ####v1.2
-- Manage a DIY LED fixture simulating sunrise/sunset lighting.
+- Manage a DIY LED fixture with sunrise/sunset simulation.
 
 ####TO-DO
-- Use two DC-DC converters to have 12V (for blue LEDs and fans) and 5V (for the RPi itself) out of the 24V main power supply used for the led fixtures;
+- Use two DC-DC converters to have 12V (for blue LEDs and fans) and 5V (for the RPi itself) out of the 24V main power supply used for the LED fixtures;
+- LED spotlights cooling fans;
 - Power button, to reboot/shutdown the RPi, on the main enclosure.
