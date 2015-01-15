@@ -2,10 +2,13 @@
 
 mLOG=/home/pi/log/post_up_mail_body
 
-#echo -e "Last network events:" > $mLOG
+#echo -e "Last network events:" > $mLOG # !!! >> $mLOG
 #echo -e " $(cat /home/pi/log/last_network_down)\n" >> $mLOG
 
-echo -e "Uptime:" > $mLOG # !!! >> $mLOG
+echo -e "Date:" >> $mLOG
+echo -e " $(date)\n" >> $mLOG
+
+echo -e "Uptime:" >> $mLOG
 echo -e "$(uptime)\n" >> $mLOG
 
 echo -e "RPi Temperatures:" >> $mLOG

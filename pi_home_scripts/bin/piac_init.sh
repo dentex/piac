@@ -26,11 +26,13 @@ sleep 30
 
 # Clean other logs
 echo -e "Cleaning logs\n>>>"
-#rm -v /home/pi/log/last_water_temp
-rm -v /home/pi/log/last_fan_step
-rm -v /home/pi/log/last_t8_status
 rm -v /home/pi/log/last_co2_status
-rm -v /home/pi/log/last_night_leds_level
+rm -v /home/pi/log/last_fan_step
+rm -v /home/pi/log/last_led_cooling_status
+rm -v /home/pi/log/last_leds_channel_blue_level
+rm -v /home/pi/log/last_leds_channel_cold_level
+rm -v /home/pi/log/last_leds_channel_warm_level
+rm -v /home/pi/log/last_leds_channel_white_level
 echo $sep
 
 # Init servod

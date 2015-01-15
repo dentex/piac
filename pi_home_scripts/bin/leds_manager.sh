@@ -6,6 +6,9 @@ SC=`basename $0`
 # Debug false, more verbose
 DEBUG=false
 
+co2pin=23
+fanpin=25
+
 TT="/home/pi/bin/leds_timetable"
 
 h=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' ' | cut -d ' ' -f1  | cut -d ':' -f1) )
@@ -22,6 +25,8 @@ BLUE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f6) )
 
 # Get CO2 status (1 -> ON; 0 -> OFF)
 CO2_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f5) )
+
+FAN_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f7) )
 
 # For debug only
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* $TT entries:"; fi
@@ -61,7 +66,7 @@ if [ ! -f $BLUE_LOG ]; then
 fi
 BLUE_STORED=`cat $BLUE_LOG`
 
-# Log file to store the last CO2 lamps power status
+# Log file to store the last CO2 status
 CO2_STATUS_LOG="/home/pi/log/last_co2_status"
 if [ ! -f $CO2_STATUS_LOG ]; then
   echo "0" > $CO2_STATUS_LOG
@@ -69,17 +74,25 @@ if [ ! -f $CO2_STATUS_LOG ]; then
 fi
 STORED_CO2_STATUS=`cat $CO2_STATUS_LOG`
 
+# Log file to store the last LED fan status
+FAN_STATUS_LOG="/home/pi/log/last_led_cooling_status"
+if [ ! -f $FAN_STATUS_LOG ]; then
+  echo "0" > $FAN_STATUS_LOG
+  chmod 666 $FAN_STATUS_LOG
+fi
+STORED_FAN_STATUS=`cat $FAN_STATUS_LOG`
+
 # Define the function to switch CO2 electrovalve on/off
 function writeCo2gpioPin {
   if [ "$1" != "$STORED_CO2_STATUS" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_CO2_STATUS"; fi
 
     # CO2 gpio pin
-    gpio -g write 24 $1
+    gpio -g write $co2pin $1
     if [ "$?" -ne 0 ]; then
       echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
-      gpio export 24 out
-      gpio -g write 24 $1
+      gpio export $co2pin out
+      gpio -g write $co2pin $1
       if [ "$?" -ne 0 ]; then
         echo $1 > $CO2_STATUS_LOG
         echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
@@ -87,6 +100,29 @@ function writeCo2gpioPin {
     else
       echo $1 > $CO2_STATUS_LOG
       echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
+    fi
+
+    sleep 1
+  fi
+}
+
+function writeFanGpioPin {
+  if [ "$1" != "$STORED_FAN_STATUS" ]; then
+    if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_FAN_STATUS"; fi
+
+    # LED fan gpio pin
+    gpio -g write $fanpin $1
+    if [ "$?" -ne 0 ]; then
+      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
+      gpio export $fanpin out
+      gpio -g write $fanpin $1
+      if [ "$?" -ne 0 ]; then
+        echo $1 > $FAN_STATUS_LOG
+        echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
+      fi
+    else
+      echo $1 > $FAN_STATUS_LOG
+      echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
     fi
 
     sleep 1
@@ -179,6 +215,9 @@ for i in `echo ${!MINUTES[*]}`; do
 
     co2=${CO2_STATUS[$i]}
     writeCo2gpioPin $co2
+
+    coolingFan=${FAN_STATUS[$i]}
+    writeFanGpioPin $coolingFan
 
     exit 0
 
