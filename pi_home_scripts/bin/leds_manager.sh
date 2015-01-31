@@ -1,13 +1,17 @@
 #!/bin/bash
 
+if [ ! -f /tmp/piac_is_configured ]; then
+  exit 0
+fi
+
 # This script name
 SC=`basename $0`
 
 # Debug false, more verbose
 DEBUG=false
 
-co2pin=23
-fanpin=25
+co2pin=18
+fanpin=24
 
 TT="/home/pi/bin/leds_timetable"
 
@@ -21,10 +25,10 @@ done
 COLD=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f2) )
 WARM=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f3) )
 WHITE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f4) )
-BLUE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f6) )
+BLUE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f5) )
 
 # Get CO2 status (1 -> ON; 0 -> OFF)
-CO2_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f5) )
+CO2_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f6) )
 
 FAN_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f7) )
 
