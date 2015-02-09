@@ -27,12 +27,16 @@
 PATH=/home/pi/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PIAC_LOG=/home/pi/log/piac.log
 
-40 20 * * * piac_backup.sh >> $PIAC_LOG 2>&1
+40 20 * * 0 piac_backup.sh >> $PIAC_LOG 2>&1
+40 20 * * 3 piac_backup.sh >> $PIAC_LOG 2>&1
 
 */5 * * * * sleep 20 && ngrok_checker.sh >> $PIAC_LOG 2>&1
 10 23 * * * sleep 20 && ngrok_killer.sh >> $PIAC_LOG 2>&1
 
 */5 * * * * sleep 10 && lid_fan_manager.sh >> $PIAC_LOG 2>&1
 
-* * * * * lights_manager.sh >> $PIAC_LOG 2>&1
-* * * * * sleep 30 && dweet_to_freeboard.sh > /dev/null 2>&1
+* * * * * leds_manager.sh >> $PIAC_LOG 2>&1
+* * * * * sleep 15 && dweet_to_freeboard.sh > /dev/null 2>&1
+
+#disabled, webcam malfunction
+#* * * * * sleep 30 && webcam_manager.sh > /dev/null 2>&1

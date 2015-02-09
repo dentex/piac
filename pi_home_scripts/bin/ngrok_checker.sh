@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ! -f /tmp/piac_is_configured ]; then
+  exit 0
+fi
+
 SC=`basename $0`
 
 # Hour of the day

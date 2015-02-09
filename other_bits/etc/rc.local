@@ -30,7 +30,7 @@ echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
 hwclock -s >> $PIAC_LOG 2>&1
 
 echo "@@@@ Heartbeat through onboard green led" >> $PIAC_LOG 2>&1
-echo heartbeat > /sys/class/leds/led0/trigger
+echo heartbeat > /sys/class/leds/ACT/trigger
 
 echo "@@@@ Launching initialization script" >> $PIAC_LOG 2>&1
 /home/pi/bin/piac_init.sh >> $PIAC_LOG 2>&1

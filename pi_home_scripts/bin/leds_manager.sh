@@ -10,8 +10,9 @@ SC=`basename $0`
 # Debug false, more verbose
 DEBUG=false
 
-co2pin=18
-fanpin=24
+t8pin=18
+co2pin=23
+fanpin=25
 
 TT="/home/pi/bin/leds_timetable"
 
@@ -27,10 +28,10 @@ WARM=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f3) )
 WHITE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f4) )
 BLUE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f5) )
 
-# Get CO2 status (1 -> ON; 0 -> OFF)
+# Get CO2, LED fans and T8 status
 CO2_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f6) )
-
 FAN_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f7) )
+T8_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f8) )
 
 # For debug only
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* $TT entries:"; fi
@@ -40,6 +41,8 @@ if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${WARM[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${WHITE[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${BLUE[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${CO2_STATUS[@]}"; fi
+if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${FAN_STATU[@]}"; fi
+if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${T8_STATUS[@]}"; fi
 
 # Log file to store the last LED channels intensity level
 COLD_LOG="/home/pi/log/last_leds_channel_cold_level"
@@ -86,6 +89,14 @@ if [ ! -f $FAN_STATUS_LOG ]; then
 fi
 STORED_FAN_STATUS=`cat $FAN_STATUS_LOG`
 
+# Log file to store the last T8 lamps status
+T8_STATUS_LOG="/home/pi/log/last_t8_status"
+if [ ! -f $T8_STATUS_LOG ]; then
+  echo "0" > $T8_STATUS_LOG
+  chmod 666 $T8_STATUS_LOG
+fi
+STORED_T8_STATUS=`cat $T8_STATUS_LOG`
+
 # Define the function to switch CO2 electrovalve on/off
 function writeCo2gpioPin {
   if [ "$1" != "$STORED_CO2_STATUS" ]; then
@@ -127,6 +138,29 @@ function writeFanGpioPin {
     else
       echo $1 > $FAN_STATUS_LOG
       echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
+    fi
+
+    sleep 1
+  fi
+}
+
+function writeT8GpioPin {
+  if [ "$1" != "$STORED_T8_STATUS" ]; then
+    if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_T8_STATUS"; fi
+
+    # T8 lamps gpio pin
+    gpio -g write $t8pin $1
+    if [ "$?" -ne 0 ]; then
+      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
+      gpio export $t8pin out
+      gpio -g write $t8pin $1
+      if [ "$?" -ne 0 ]; then
+        echo $1 > $T8_STATUS_LOG
+        echo "[$(date '+%x %X')] [$SC] Switching T8 lamps to status $1"
+      fi
+    else
+      echo $1 > $T8_STATUS_LOG
+      echo "[$(date '+%x %X')] [$SC] Switching T8 lamps to status $1"
     fi
 
     sleep 1
@@ -222,6 +256,9 @@ for i in `echo ${!MINUTES[*]}`; do
 
     coolingFan=${FAN_STATUS[$i]}
     writeFanGpioPin $coolingFan
+
+    t8Lamps=${T8_STATUS[$i]}
+    writeT8GpioPin $t8Lamps
 
     exit 0
 

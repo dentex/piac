@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ! -f /tmp/piac_is_configured ]; then
+  exit 0
+fi
+
 # This script name
 SC=`basename $0`
 
