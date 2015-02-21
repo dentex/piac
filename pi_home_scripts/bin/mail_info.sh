@@ -14,7 +14,7 @@ limit=10
 NONET=false
 
 function sendMail {
-  ping -c 1 -W 5 -w 5 google.it > /dev/null
+  ping -c 1 -W 5 -w 5 8.8.8.8 > /dev/null
   if [ "$?" -eq 0 ]; then
     NONET=false
     echo "[$(date '+%x %X')] [$SC] Sending post-up email... [$C]"

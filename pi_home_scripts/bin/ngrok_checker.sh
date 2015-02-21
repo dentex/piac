@@ -10,7 +10,7 @@ SC=`basename $0`
 H=`date +%H`
 
 function check_network {
-  ping -c 1 -w 3 google.it > /dev/null 2>&1
+  ping -c 1 -w 3 8.8.8.8 > /dev/null 2>&1
   if [ "$?" -ne 0 ]; then
     #echo "[$(date '+%x %X')] [$SC] No network connection. Closing"
     exit 1

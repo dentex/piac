@@ -33,6 +33,7 @@ rm -v /home/pi/log/last_leds_channel_blue_level
 rm -v /home/pi/log/last_leds_channel_cold_level
 rm -v /home/pi/log/last_leds_channel_warm_level
 rm -v /home/pi/log/last_leds_channel_white_level
+rm -v /home/pi/log/last_t8_status
 echo $sep
 
 # Init servod

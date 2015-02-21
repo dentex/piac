@@ -12,7 +12,7 @@ DEBUG=false
 
 t8pin=18
 co2pin=23
-fanpin=25
+fanpin=24
 
 TT="/home/pi/bin/leds_timetable"
 

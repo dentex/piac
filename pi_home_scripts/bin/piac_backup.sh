@@ -1,7 +1,8 @@
 #!/bin/bash
 
 SC=`basename $0`
-BKP_FILE="/mnt/DATA/piac_backup.tar"
+DATE=`date +%d-%b-%Y_%H%M`
+BKP_FILE="/mnt/DATA/piac_backup_$DATE.tar"
 #BKP_FILE="/tmp/piac_backup.tar"
 BKP_DIR="/mnt/DATA/piac_backup"
 
@@ -28,6 +29,10 @@ function remove_cron_hourly_if_present {
 }
 
 function backup_and_compress {
+
+  # storing installed packages list
+  dpkg --get-selections > $HOME_LOG/installed-packages.log
+
   echo "[$(date '+%x %X')] [$SC] Creating backup."
 
 #  rsync -aAX --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /* "$BKP_DIR"
@@ -50,7 +55,7 @@ function backup_and_compress {
 }
 
 function check_network {
-  ping -c 1 -w 3 google.it > /dev/null 2>&1
+  ping -c 1 -w 3 8.8.8.8 > /dev/null 2>&1
   if [ "$?" -ne 0 ]; then
     echo "[$(date '+%x %X')] [$SC] No network connection. Aborting upload. Re-scheduling next hour [$C]"
     # Adding a no network `lock` file
