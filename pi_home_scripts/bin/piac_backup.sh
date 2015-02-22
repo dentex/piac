@@ -30,10 +30,13 @@ function remove_cron_hourly_if_present {
 
 function backup_and_compress {
 
+  echo "[$(date '+%x %X')] [$SC] Creating backup."
+
   # storing installed packages list
   dpkg --get-selections > $HOME_LOG/installed-packages.log
 
-  echo "[$(date '+%x %X')] [$SC] Creating backup."
+  # copying /boot/config.txt
+  cp /boot/config.txt $BKP_DIR/boot/config.txt
 
 #  rsync -aAX --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /* "$BKP_DIR"
 
