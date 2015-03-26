@@ -13,6 +13,7 @@ DEBUG=false
 t8pin=18
 co2pin=23
 fanpin=24
+potpin=25
 
 TT="/home/pi/bin/leds_timetable"
 
@@ -102,12 +103,17 @@ function writeCo2gpioPin {
   if [ "$1" != "$STORED_CO2_STATUS" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_CO2_STATUS"; fi
 
-    # CO2 gpio pin
+    # CO2 gpio pin & temporary linked pot-light pin
     gpio -g write $co2pin $1
+    gpio -g write $potpin $1
     if [ "$?" -ne 0 ]; then
       echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
       gpio export $co2pin out
+      gpio export $potpin out
+
       gpio -g write $co2pin $1
+      gpio -g write $potpin $1
+
       if [ "$?" -ne 0 ]; then
         echo $1 > $CO2_STATUS_LOG
         echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
