@@ -8,6 +8,7 @@ chmod 666 $LOG
 sleep 10
 # Check if hwclock worked properly
 if [ `date +%Y` -eq 1970 ]; then
+  echo " !!!! REBOOTING due to clock setting failure !!!!"
   reboot
   exit 1
 fi
@@ -26,6 +27,10 @@ sleep 30
 
 # Clean other logs
 echo -e "Cleaning logs\n>>>"
+
+rm -v /home/pi/log/ngrok.log
+rm -v /home/pi/log/post_up_mail_body
+
 rm -v /home/pi/log/last_co2_status
 rm -v /home/pi/log/last_fan_step
 rm -v /home/pi/log/last_led_cooling_status
