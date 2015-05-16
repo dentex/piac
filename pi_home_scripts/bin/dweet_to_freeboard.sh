@@ -44,6 +44,7 @@ function dweet {
 
 function dweet_off {
   curl -d "status=Sleeping" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  curl -d "last-update=$(date +%T)" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
 }
 
 check_network
@@ -51,7 +52,7 @@ check_network
 # Hour of the day
 H=`date +%H`
 
-# run only from 07:00 to 23:59
+# run only from 07:00 to 23:59 UTC
 if [ "$H" -gt 6 ] && [ "$H" -lt 24 ]; then
   cats
   dweet

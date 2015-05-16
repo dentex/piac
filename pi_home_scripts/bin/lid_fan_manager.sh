@@ -25,13 +25,13 @@ STEP_6_T="64"
 P="normal"
 
 # Quiter profile temperature steps increment
-qi=3
+qi=2
 
 # Hour of the day
 H=`date +%H`
 
-# 'quiter' when time goes from 21:00 to 23:59
-if [ "$H" -gt 20 ] && [ "$H" -lt 24 ]; then
+# 'quiter' when time goes from 20:00 to 23:59 UTC
+if [ "$H" -gt 19 ] && [ "$H" -lt 24 ]; then
   P="quiter"
   # Temperature steps - 'quiter' profile
   let STEP_1_T=STEP_1_T+$qi
