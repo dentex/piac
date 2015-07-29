@@ -8,9 +8,10 @@ chmod 666 $LOG
 sleep 10
 # Check if hwclock worked properly
 if [ `date +%Y` -eq 1970 ]; then
-  echo " !!!! REBOOTING due to clock setting failure !!!!"
-  reboot
-  exit 1
+#  echo " !!!! REBOOTING due to clock setting failure !!!!"
+echo " !!!! HW clock setting failure !!!!"
+#  reboot
+#  exit 1
 fi
 
 sep="--------------------------------------------"
