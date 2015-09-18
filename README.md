@@ -1,4 +1,4 @@
-PiAC v1.3
+PiAC v1.4
 ====
 
 ###(Raspberry) Pi Aquarium Controller
@@ -14,6 +14,7 @@ On the software side, this project uses/depends on:
 - https://github.com/andreafabrizi/Dropbox-Uploader *(auto-upload backups to DropBox)*
 - https://ngrok.com/ *(remote `ssh` and web access)*
 - https://dweet.io and https://freeboard.io *(IoT: messages from this project to a web dasboard)*
+- https://stedolan.github.io/jq/ *(a lightweight and flexible command-line JSON processor)*
 
 Basically, then I wrote a collection of simple **bash** scripts running with `cron` on a **Raspbian** distribution.
 
@@ -28,9 +29,9 @@ Basically, then I wrote a collection of simple **bash** scripts running with `cr
 - four GPIO pins (18, 23, 24, 25) to switch 4 single relay boards via four opto-isolators "modules", to use with:
  1. lid cooling fan (+ LED spotlights cooling fans, from v1.3)
  2. CO2 electrovalve
- 3. secondary (micro-) acquarium LED light
+ 3. secondary (micro-)acquarium LED light
  4. *unused*
-- GPIO pin n.4 (1-wire) to two DS18B20 temp probe connectors;
+- GPIO pin n.4 (1-wire) to two DS18B20 temp probe connectors (water and RPi case);
 
 ####v1.1
 - Switched from a Raspberry Pi model B rev1 to a model B+;
@@ -44,6 +45,9 @@ Basically, then I wrote a collection of simple **bash** scripts running with `cr
 ####v1.3
 - Use two DC-DC converters to have 12V (for blue LEDs and fans) and 5V (for the RPi itself) from the 24V main power supply in use for the LED fixtures;
 - LED spotlights cooling fans.
+
+####v1.4
+- Fetch sunrise/sunset data from http://sunrise-sunset.org and build a new timetable every day (based on actual location).
 
 ####TO-DO
 - Power button on the main enclosure, to reboot/shutdown the RPi.
