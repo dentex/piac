@@ -2,7 +2,9 @@
 
 # Init main log
 LOG="/home/pi/log/piac.log"
-#echo "" > $LOG
+LOGOLD="/home/pi/log/piac.log.old"
+mv --backup=t $LOG $LOGOLD
+touch $LOG
 chmod 666 $LOG
 
 sleep 10

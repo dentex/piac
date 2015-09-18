@@ -52,8 +52,8 @@ check_network
 # Hour of the day
 H=`date +%H`
 
-# run only from 07:00 to 23:59 UTC
-if [ "$H" -gt 6 ] && [ "$H" -lt 24 ]; then
+# run only from 06:00 to 21:59 UTC
+if [ "$H" -gt 5 ] && [ "$H" -lt 22 ]; then
   cats
   dweet
 else

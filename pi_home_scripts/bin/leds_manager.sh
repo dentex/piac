@@ -183,11 +183,8 @@ function interpolate {
   M=$5
 
   BC=`echo -e "scale=1;
-               x1=$x1;
-               y1=$y1;
-               x2=$x2;
-               y2=$y2;
-               x=$M; print (x-x1)*(y2-y1)/(x2-x1)+y1" | bc | sed 's/^\./0./'`
+               x=$M; 
+               print (x-$x1)*($y2-$y1)/($x2-$x1)+$y1" | bc | sed 's/^\./0./'`
   echo $BC
 }
 

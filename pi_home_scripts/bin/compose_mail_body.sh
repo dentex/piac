@@ -5,7 +5,12 @@ mLOG=/home/pi/log/post_up_mail_body
 #echo -e "Last network events:" > $mLOG # !!! >> $mLOG
 #echo -e " $(cat /home/pi/log/last_network_down)\n" >> $mLOG
 
-echo -e "Date:" > $mLOG
+if [ "$1" == "no" ]; then
+  echo -e "PiAC Normal Ops at:" > $mLOG
+else
+  echo -e "PiAC Online at:" > $mLOG
+fi
+
 echo -e " $(date)\n" >> $mLOG
 
 echo -e "Uptime:" >> $mLOG

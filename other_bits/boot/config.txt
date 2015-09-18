@@ -42,6 +42,8 @@
 #uncomment to overclock the arm. 700 MHz is the default.
 #arm_freq=800
 
+dtoverlay=i2c-rtc,ds1307
+
 gpu_mem=8
 
 dtparam=i2c1=on
@@ -50,5 +52,3 @@ dtparam=i2c_arm=on
 dtparam=act_led_trigger=heartbeat
 
 dtoverlay=w1-gpio,gpiopin=4
-
-dtoverlay=i2c-rtc,ds1307

@@ -12,15 +12,24 @@ fi
 C=1
 limit=10
 NONET=false
+NO=false
 
 function sendMail {
   ping -c 1 -W 5 -w 5 8.8.8.8 > /dev/null
   if [ "$?" -eq 0 ]; then
     NONET=false
-    echo "[$(date '+%x %X')] [$SC] Sending post-up email... [$C]"
-    source /home/pi/bin/compose_mail_body.sh .
+
+    if [ "$1" == "no" ]; then
+      echo "[$(date '+%x %X')] [$SC] Sending Normal-Ops email... [$C]"
+      source /home/pi/bin/compose_mail_body.sh no .
+      cat /home/pi/log/post_up_mail_body | mail -s "PiAC Normal Ops" samuele.rini76@gmail.com > /dev/null
+    else
+      echo "[$(date '+%x %X')] [$SC] Sending post-up email... [$C]"
+      source /home/pi/bin/compose_mail_body.sh .
+      cat /home/pi/log/post_up_mail_body | mail -s "PiAC Online" samuele.rini76@gmail.com > /dev/null
+    fi
+
     #cat /home/pi/log/post_up_mail_body | mail --debug-level=15 -s "INFO" samuele.rini76@gmail.com
-    cat /home/pi/log/post_up_mail_body | mail -s "INFO" samuele.rini76@gmail.com > /dev/null
   else
     echo "[$(date '+%x %X')] [$SC] No network connection. [$C]"
     NONET=true
@@ -32,7 +41,11 @@ function close {
   exit 0
 }
 
-sendMail
+if [ "$1" == "no" ]; then
+  sendMail no
+else
+  sendMail
+fi
 
 while [ "$?" -ne 0 ] || [ "$NONET" = true ]; do 
   echo "[$(date '+%x %X')] [$SC] Failed. Retrying in 30 sec"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SC=`basename $0`
-DATE=`date +%d-%b-%Y_%H%M`
+DATE=`date +%Y-%m-%d_%H%M`
 BKP_FILE="/mnt/DATA/piac_backup_$DATE.tar"
 #BKP_FILE="/tmp/piac_backup.tar"
 BKP_DIR="/mnt/DATA/piac_backup"
