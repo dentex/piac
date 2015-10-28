@@ -65,7 +65,7 @@ function check_network {
     touch $NNF
     # Re-scheduling
     cp $HOME_BIN/$SC $H_SC_PATH
-    chmod 777 $H_SC_PATH
+    chmod 755 $H_SC_PATH
     exit 1
   fi
 }

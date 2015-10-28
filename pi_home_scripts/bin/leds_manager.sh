@@ -1,15 +1,32 @@
 #!/bin/bash
 
-if [ ! -f /tmp/piac_is_configured ]; then
-  exit 0
-fi
-
 # This script name
 SC=`basename $0`
 
-# Debug false, more verbose
+if [ ! -f /tmp/piac_is_configured ]; then
+  echo -e "[$(date '+%x %X')] [$SC] PiAC is not configured: exiting."
+  exit 1
+fi
+
+# Debug true => more verbose
 DEBUG=false
 
+# Current day minute through all the day [ranges from 0 to 1439, minutes n° 1 to n° 1440=(24h*60min)]
+#M=$1 # for development test
+M=$(echo "`date +%H`*60+`date +%M`" | bc)
+if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Current day minute is $M"; fi
+if [ $M -eq 1439 ]; then
+  echo "[$(date '+%x %X')] [$SC]... End of day ..."
+  echo "========================================================="
+  exit 0
+fi
+
+# exit between 21:00 and 03:00 UTC (due to "flat" LED's timetable)
+if [ "$M" -gt 1260 ] || [ "$M" -lt 180 ]; then
+  exit 2
+fi
+
+# GPIO pins in use
 t8pin=18
 co2pin=23
 fanpin=24
@@ -215,11 +232,7 @@ function callServoblaster {
   fi
 }
 
-# Current day minute through all the day [ranges from 0 to 1439, minutes n° 1 to n° 1440=(24h*60min)]
-#M=$1 # for development test
-M=$(echo "`date +%k`*60+`date +%M`" | bc)
-if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Current day minute is $M"; fi
-if [ $M -eq 1439 ]; then echo "[$(date '+%x %X')] [$SC]... End of day ..." && exit 0; fi
+#
 
 for i in `echo ${!MINUTES[*]}`; do
   x1=${MINUTES[$i]}

@@ -51,36 +51,43 @@ function fetch_data {
   if [ ! -f "$ALMANAC/$D0" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D0"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T0" -o $ALMANAC/$D0;
+    chmod 755 $ALMANAC/$D0
     test_latest_cmd
   fi
   if [ ! -f "$ALMANAC/$D1" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D1"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T1" -o $ALMANAC/$D1;
+    chmod 755 $ALMANAC/$D1
     test_latest_cmd
   fi
   if [ ! -f "$ALMANAC/$D2" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D2"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T2" -o $ALMANAC/$D2;
+    chmod 755 $ALMANAC/$D2
     test_latest_cmd
   fi
   if [ ! -f "$ALMANAC/$D3" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D3"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T3" -o $ALMANAC/$D3;
+    chmod 755 $ALMANAC/$D3
     test_latest_cmd
   fi
   if [ ! -f "$ALMANAC/$D4" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D4"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T4" -o $ALMANAC/$D4;
+    chmod 755 $ALMANAC/$D4
     test_latest_cmd
   fi
   if [ ! -f "$ALMANAC/$D5" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D5"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T5" -o $ALMANAC/$D5;
+    chmod 755 $ALMANAC/$D5
     test_latest_cmd
   fi
   if [ ! -f "$ALMANAC/$D6" ]; then
     echo "[$(date '+%x %X')] [$SC] Fetching almanac day $D6"
     curl -s "http://api.sunrise-sunset.org/json?lat=$LAT&lng=$LNG&date=$T6" -o $ALMANAC/$D6;
+    chmod 755 $ALMANAC/$D6
     test_latest_cmd
   fi
 }
