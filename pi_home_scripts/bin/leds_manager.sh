@@ -213,7 +213,7 @@ function callServoblaster {
   if [ "$1" != "$STORED_LEVEL" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored $3 channell: $STORED_LEVEL"; fi
     #if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Setting $3 channell to $1%"; fi
-    echo "[$(date '+%x %X')] [$SC] Setting $3 channell to $1%"
+    echo "[$(date '+%x %X')] [$SC] Setting $3 ch. to $1%"
 
     if [ "$1" != 0 ]; then
       val="$1%"

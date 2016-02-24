@@ -2,19 +2,22 @@
 
 # Init main log
 LOG="/home/pi/log/piac.log"
-LOGOLD="/home/pi/log/piac.log.old"
-mv --backup=t $LOG $LOGOLD
-touch $LOG
+
+# Now using logrotate to rotate piac.log
+#LOGOLD="/home/pi/log/piac.log.old"
+#mv --backup=t $LOG $LOGOLD
+#touch $LOG
+
 chmod 666 $LOG
 
-sleep 10
+# Wait for the hwclock/ntpdate
+sleep 30
+
 # Check if hwclock worked properly
 if [ `date +%Y` -eq 1970 ]; then
-#  echo " !!!! REBOOTING due to clock setting failure !!!!"
-echo " !!!! HW clock setting failure !!!!"
-#  reboot
-#  exit 1
+  echo " !!!! HW clock setting failure !!!!"
 fi
+
 
 sep="--------------------------------------------"
 
@@ -26,7 +29,7 @@ echo "******************************************************"
 echo ""
 
 # add some delay
-sleep 30
+sleep 5
 
 # Clean other logs
 echo -e "Cleaning logs\n>>>"

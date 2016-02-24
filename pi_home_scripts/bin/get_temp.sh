@@ -10,6 +10,6 @@ elif [ "$1" == "case" ]; then
   cat /sys/bus/w1/devices/w1_bus_master1/28-0000060c6ff5/w1_slave | grep -oE '[0-9]{5}' | awk  '{x=$1}END{rounded = sprintf("%.1f", x/1000); print rounded}'
 else
   echo "******************************"
-  echo -e "No proper parameter specified.\nUse:\n cpu\n gpu\n-or-\n water  "
+  echo -e "No proper parameter specified.\nUse one of the parameters:\n cpu\n gpu\n case\n water"
   echo "******************************"
 fi

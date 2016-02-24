@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -f /tmp/piac_is_configured ]; then
-  exit 0
+  exit 1
 fi
 
 # This script name

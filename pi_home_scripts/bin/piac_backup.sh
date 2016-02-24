@@ -45,7 +45,7 @@ function backup_and_compress {
   echo -e "$HOME_BIN\n----------------------------------" > $BKP_DIR/CHANGES
   rsync -aAXi --delete $HOME_BIN/ $BKP_DIR/$HOME_BIN >> $BKP_DIR/CHANGES
   echo -e "\n$HOME_LOG\n----------------------------------" > $BKP_DIR/CHANGES
-  rsync -aAXi --delete $HOME_LOG/ $BKP_DIR/$HOME_LOG >> $BKP_DIR/CHANGES
+  rsync -aAXi --exclude="last*" --delete $HOME_LOG/ $BKP_DIR/$HOME_LOG >> $BKP_DIR/CHANGES
   echo -e "\n$ETC\n----------------------------------" >> $BKP_DIR/CHANGES
   rsync -aAXi --delete $ETC/ $BKP_DIR/$ETC >> $BKP_DIR/CHANGES
   echo -e "\n$CRON\n----------------------------------" >> $BKP_DIR/CHANGES

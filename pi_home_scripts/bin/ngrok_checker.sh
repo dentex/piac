@@ -1,5 +1,8 @@
 #!/bin/bash
 
+PIHOME="/home/pi"
+PATH="$PIHOME/bin:$PATH"
+
 if [ ! -f /tmp/piac_is_configured ]; then
   exit 0
 fi
@@ -13,6 +16,7 @@ function check_network {
   ping -c 1 -w 3 8.8.8.8 > /dev/null 2>&1
   if [ "$?" -ne 0 ]; then
     #echo "[$(date '+%x %X')] [$SC] No network connection. Closing"
+    ngrok_killer.sh
     exit 1
   fi
 }
