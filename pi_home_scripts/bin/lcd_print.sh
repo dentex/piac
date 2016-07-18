@@ -46,23 +46,25 @@ function print {
   /home/pi/bin/lcd_print.py -a "White Ch: $white%" -b "Warm  Ch: $warm%    "
   /home/pi/bin/lcd_print.py -a "Cold Ch: $cold%" -b "Blue Ch: $blue%   "
 
-  if [ "$?" -eq 0 ]; then
+  #if [ "$?" -eq 0 ]; then
     IS_LCD_ON=true
-  fi
+  #fi
 }
 
-# Hour of the day
-H=`date +%H`
-
-# run only from 01:00 to 20:59 UTC
 while : 
 do
-  if [ "$H" -gt 0 ] && [ "$H" -lt 21 ]; then
+  # Hour of the day
+  H=`date +%H`
+
+  # run only from 04:00 to 18:59 UTC
+  if [ "$H" -gt 3 ] && [ "$H" -lt 19 ]; then
     cats
     print
   else
     if [ "$IS_LCD_ON" = true ]; then
       /home/pi/bin/lcd_turn_backlight_off.py
+      IS_LCD_ON=false
+      sleep 300
     fi
   fi
 done

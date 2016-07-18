@@ -34,22 +34,32 @@ sleep 5
 # Clean other logs
 echo -e "Cleaning logs\n>>>"
 
-rm -v /home/pi/log/ngrok.log
 rm -v /home/pi/log/post_up_mail_body
 
 rm -v /home/pi/log/last_co2_status
 rm -v /home/pi/log/last_fan_step
-rm -v /home/pi/log/last_led_cooling_status
+rm -v /home/pi/log/last_leds_cooling_status
 rm -v /home/pi/log/last_leds_channel_blue_level
 rm -v /home/pi/log/last_leds_channel_cold_level
 rm -v /home/pi/log/last_leds_channel_warm_level
 rm -v /home/pi/log/last_leds_channel_white_level
-rm -v /home/pi/log/last_t8_status
+rm -v /home/pi/log/last_leds_channel_aux_status
 echo $sep
 
-# Init servod
+# Init servod (physical pin numbers)
+# pin 11 -> 0: Blue LED Strip
+# pin 15 -> 1: Lid Cooling fan
+# pin 19 -> 2: COLD LED channel
+# pin 21 -> 3: WARM LED channel
+# pin 23 -> 4: WHITE LED channel
+# pin 29 -> 5: AUX LED channel
 echo -e "Initializing servod\n>>>"
-sudo servod --p1pins=11,15,19,21,23 --cycle-time=5000us --step-size=5us --min=5us --max 5000us
+sudo servod --p1pins=11,15,19,21,23,29 --cycle-time=5000us --step-size=5us --min=5us --max 5000us
+if [ "$?" -ne 0 ]; then
+  echo "[$(date '+%x %X')] [$SC] Error configurating servod. Exiting."
+  echo "########################### !!!! ###########################"
+  exit 1
+fi
 echo $sep
 
 # Lid cooling fan to 100% for test
@@ -62,6 +72,7 @@ echo $sep
 
 # Init relays' GPIO pins
 echo -e "Initializing relays' GPIO pins\n>>>"
+# (GPIO pin numbers)
 for pin in 18 23 24 25; do
   echo "Exporting pin $pin as output"
   /usr/local/bin/gpio export $pin out

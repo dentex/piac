@@ -14,12 +14,12 @@ DEBUG=false
 MAX_T="75"
 
 # Temperature steps - 'normal' profile
-STEP_1_T="39"
-STEP_2_T="44"
-STEP_3_T="49"
-STEP_4_T="54"
-STEP_5_T="59"
-STEP_6_T="64"
+STEP_1_T="40"
+STEP_2_T="42"
+STEP_3_T="44"
+STEP_4_T="46"
+STEP_5_T="48"
+STEP_6_T="50"
 
 # Default profile
 P="normal"
@@ -30,8 +30,8 @@ qi=2
 # Hour of the day
 H=`date +%H`
 
-# 'quiter' when time goes from 20:00 to 23:59 UTC
-if [ "$H" -gt 19 ] && [ "$H" -lt 24 ]; then
+# 'quiter' when time goes from 20:00 to 01:59 UTC
+if [ "$H" -gt 18 ] && [ "$H" -lt 24 ]; then
   P="quiter"
   # Temperature steps - 'quiter' profile
   let STEP_1_T=STEP_1_T+$qi

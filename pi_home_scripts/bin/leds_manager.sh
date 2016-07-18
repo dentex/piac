@@ -21,13 +21,13 @@ if [ $M -eq 1439 ]; then
   exit 0
 fi
 
-# exit between 21:00 and 03:00 UTC (due to "flat" LED's timetable)
-if [ "$M" -gt 1260 ] || [ "$M" -lt 180 ]; then
+# exit between 22:00 and 03:00 UTC (due to "flat" LED's timetable)
+if [ "$M" -gt 1320 ] || [ "$M" -lt 180 ]; then
   exit 2
 fi
 
 # GPIO pins in use
-t8pin=18
+# unused=18
 co2pin=23
 fanpin=24
 potpin=25
@@ -45,11 +45,11 @@ COLD=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f2) )
 WARM=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f3) )
 WHITE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f4) )
 BLUE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f5) )
+AUX=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f8) )
 
-# Get CO2, LED fans and T8 status
+# Get CO2, LED fans and AUX status
 CO2_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f6) )
 FAN_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f7) )
-T8_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f8) )
 
 # For debug only
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* $TT entries:"; fi
@@ -60,7 +60,7 @@ if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${WHITE[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${BLUE[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${CO2_STATUS[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${FAN_STATU[@]}"; fi
-if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${T8_STATUS[@]}"; fi
+if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${AUX[@]}"; fi
 
 # Log file to store the last LED channels intensity level
 COLD_LOG="/home/pi/log/last_leds_channel_cold_level"
@@ -100,20 +100,20 @@ fi
 STORED_CO2_STATUS=`cat $CO2_STATUS_LOG`
 
 # Log file to store the last LED fan status
-FAN_STATUS_LOG="/home/pi/log/last_led_cooling_status"
+FAN_STATUS_LOG="/home/pi/log/last_leds_cooling_status"
 if [ ! -f $FAN_STATUS_LOG ]; then
   echo "0" > $FAN_STATUS_LOG
   chmod 666 $FAN_STATUS_LOG
 fi
 STORED_FAN_STATUS=`cat $FAN_STATUS_LOG`
 
-# Log file to store the last T8 lamps status
-T8_STATUS_LOG="/home/pi/log/last_t8_status"
-if [ ! -f $T8_STATUS_LOG ]; then
-  echo "0" > $T8_STATUS_LOG
-  chmod 666 $T8_STATUS_LOG
+# Log file to store the last AUX PWM status
+AUX_LOG="/home/pi/log/last_leds_channel_aux_status"
+if [ ! -f $AUX_LOG ]; then
+  echo "0" > $AUX_LOG
+  chmod 666 $AUX_LOG
 fi
-STORED_T8_STATUS=`cat $T8_STATUS_LOG`
+AUX_STORED=`cat $AUX_LOG`
 
 # Define the function to switch CO2 electrovalve on/off
 function writeCo2gpioPin {
@@ -167,29 +167,6 @@ function writeFanGpioPin {
   fi
 }
 
-function writeT8GpioPin {
-  if [ "$1" != "$STORED_T8_STATUS" ]; then
-    if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_T8_STATUS"; fi
-
-    # T8 lamps gpio pin
-    gpio -g write $t8pin $1
-    if [ "$?" -ne 0 ]; then
-      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
-      gpio export $t8pin out
-      gpio -g write $t8pin $1
-      if [ "$?" -ne 0 ]; then
-        echo $1 > $T8_STATUS_LOG
-        echo "[$(date '+%x %X')] [$SC] Switching T8 lamps to status $1"
-      fi
-    else
-      echo $1 > $T8_STATUS_LOG
-      echo "[$(date '+%x %X')] [$SC] Switching T8 lamps to status $1"
-    fi
-
-    sleep 1
-  fi
-}
-
 # Extrapolate values between defined times and values in TT
 function interpolate {
   x1=$1
@@ -212,7 +189,6 @@ function callServoblaster {
 
   if [ "$1" != "$STORED_LEVEL" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored $3 channell: $STORED_LEVEL"; fi
-    #if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Setting $3 channell to $1%"; fi
     echo "[$(date '+%x %X')] [$SC] Setting $3 ch. to $1%"
 
     if [ "$1" != 0 ]; then
@@ -260,10 +236,16 @@ for i in `echo ${!MINUTES[*]}`; do
 
     blue_value=`interpolate $x1 $blue_y1 $x2 $blue_y2 $M`
 
+    aux_y1=${AUX[$i]}
+    aux_y2=${AUX[$(( $i+1 ))]}
+
+    aux_value=`interpolate $x1 $aux_y1 $x2 $aux_y2 $M`
+
     callServoblaster $cold_value 2 COLD
     callServoblaster $warm_value 3 WARM
     callServoblaster $white_value 4 WHITE
     callServoblaster $blue_value 0 BLUE
+    callServoblaster $aux_value 5 AUX
 
     #echo "[$(date '+%x %X')] [$SC] COLD:$cold_value / WARM:$warm_value / WHITE:$white_value / BLUE:$blue_value"
 
@@ -272,9 +254,6 @@ for i in `echo ${!MINUTES[*]}`; do
 
     coolingFan=${FAN_STATUS[$i]}
     writeFanGpioPin $coolingFan
-
-    t8Lamps=${T8_STATUS[$i]}
-    writeT8GpioPin $t8Lamps
 
     exit 0
 

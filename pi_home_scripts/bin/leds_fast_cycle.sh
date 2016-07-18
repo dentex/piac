@@ -87,10 +87,10 @@ while [ "$start" -ne "$M" ]; do
     M=240
   fi
 
-  # between 08:45 and 13:20 UTC
-  if [[ "$M" -gt 525 && "$M" -lt 800 ]]; then
-    echo "... skipping daylight ..."
-    M=800
+  # between 08:40 and 13:15 UTC
+  if [[ "$M" -gt 540 && "$M" -lt 795 ]]; then
+    echo "... skipping daylight period ..."
+    M=795
   fi
 
   for i in `echo ${!MINUTES[*]}`; do

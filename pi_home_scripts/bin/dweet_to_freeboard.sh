@@ -26,24 +26,33 @@ function cats {
 
 function dweet {
   curl -d "status=Running" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-
+  sleep 0.5
   curl -d "cpu-temp=$cputemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "gpu-temp=$gputemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "water-temp=$watertemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "case-temp=$casetemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "co2-status=$co2" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "lid-fan-step=$fan" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-
+  sleep 0.5
   curl -d "leds_channel_cold_level=$cold" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "leds_channel_warm_level=$warm" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "leds_channel_white_level=$white" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "leds_channel_blue_level=$blue" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-
+  sleep 0.5
   curl -d "last-update=$(date +%T)" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
 }
 
 function dweet_off {
   curl -d "status=Sleeping" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
+  sleep 0.5
   curl -d "last-update=$(date +%T)" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
 }
 
