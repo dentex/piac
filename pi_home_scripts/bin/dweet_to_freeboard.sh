@@ -32,21 +32,21 @@ function dweet {
   curl -d "gpu-temp=$gputemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
   sleep 0.5
   curl -d "water-temp=$watertemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "case-temp=$casetemp" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "co2-status=$co2" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "lid-fan-step=$fan" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "leds_channel_cold_level=$cold" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "leds_channel_warm_level=$warm" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "leds_channel_white_level=$white" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "leds_channel_blue_level=$blue" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
-  sleep 0.5
+  sleep 1
   curl -d "last-update=$(date +%T)" "http://dweet.io/dweet/for/piac" > /dev/null 2>&1
 }
 
@@ -59,12 +59,12 @@ function dweet_off {
 check_network
 
 # Hour of the day
-H=`date +%H`
+#H=`date +%H`
 
 # run only from 04:00 to 21:59 UTC
-if [ "$H" -gt 3 ] && [ "$H" -lt 22 ]; then
+#if [ "$H" -gt 3 ] && [ "$H" -lt 22 ]; then
   cats
   dweet
-else
-  dweet_off
-fi
+#else
+#  dweet_off
+#fi

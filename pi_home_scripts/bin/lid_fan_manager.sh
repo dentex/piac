@@ -14,18 +14,15 @@ DEBUG=false
 MAX_T="75"
 
 # Temperature steps - 'normal' profile
-STEP_1_T="40"
-STEP_2_T="42"
-STEP_3_T="44"
-STEP_4_T="46"
-STEP_5_T="48"
-STEP_6_T="50"
+STEP_1_T="44"
+STEP_2_T="46"
+STEP_3_T="52"
 
 # Default profile
 P="normal"
 
 # Quiter profile temperature steps increment
-qi=2
+qi=3
 
 # Hour of the day
 H=`date +%H`
@@ -37,9 +34,6 @@ if [ "$H" -gt 18 ] && [ "$H" -lt 24 ]; then
   let STEP_1_T=STEP_1_T+$qi
   let STEP_2_T=STEP_2_T+$qi
   let STEP_3_T=STEP_3_T+$qi
-  let STEP_4_T=STEP_4_T+$qi
-  let STEP_5_T=STEP_5_T+$qi
-  let STEP_6_T=STEP_6_T+$qi
 fi
 
 # Lid fan speed steps
@@ -47,10 +41,7 @@ STEP_0_R="0"
 
 STEP_1_R="50"
 STEP_2_R="60"
-STEP_3_R="70"
-STEP_4_R="80"
-STEP_5_R="90"
-STEP_6_R="100"
+STEP_3_R="100"
 
 # Retrieve SoC temperature
 CPU_TEMP=$(cat /sys/class/thermal/thermal_zone0/temp)
@@ -78,13 +69,7 @@ if [ "$DEBUG" = true ]; then echo -e "\n[$(date '+%x %X')] [$SC]* stored speed $
 
 # Define the function to decide fan speed
 function check_fan_speed {
-  if [ "$CPU_TEMP_I" -gt "$STEP_6_T" ]; then
-    CURR_SPEED=$STEP_6_R
-  elif [ "$CPU_TEMP_I" -gt "$STEP_5_T" ]; then
-    CURR_SPEED=$STEP_5_R
-  elif [ "$CPU_TEMP_I" -gt "$STEP_4_T" ]; then
-    CURR_SPEED=$STEP_4_R
-  elif [ "$CPU_TEMP_I" -gt "$STEP_3_T" ]; then
+  if [ "$CPU_TEMP_I" -gt "$STEP_3_T" ]; then
     CURR_SPEED=$STEP_3_R
   elif [ "$CPU_TEMP_I" -gt "$STEP_2_T" ]; then
     CURR_SPEED=$STEP_2_R

@@ -7,7 +7,7 @@ SC=`basename $0`
 pin=18
 
 # Total repetitions each night
-RE=8
+RE=10
 
 # Store $RE times between 18:00z and 21:00z and order them
 times=($(shuf -i 1080-1260 -n $RE | sort -g))
@@ -41,5 +41,6 @@ for i in `echo ${!minutes[*]}`; do
 
   echo "[$(date '+%x %X')] [$SC] setting command '/usr/local/bin/gpio -g write $pin $s' to run at ${hours[$i]}:${minutes[$i]}"
   echo "/usr/local/bin/gpio -g write $pin $s" | at ${hours[$i]}:${minutes[$i]}
-  echo "[$(date '+%x %X')] [$SC] ***"
 done
+
+echo "[$(date '+%x %X')] [$SC] ===================="

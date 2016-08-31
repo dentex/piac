@@ -6,15 +6,15 @@
 # time---cold---warm---white--blue---co2----fans---aux
 00:00    0      0      0      1      0      0      0
 
-CIVIL_TW_BEG     0      0      0      1      0      0      0
-SUNRISEp0     2      5      2      50     0      1      0.5
+CIVIL_TW_BEG     0      0      0      1      1      0      0
+SUNRISEp0     2      5      2      50     1      1      0.5
 SUNRISEp30     5      70     5      20     1      1      1
 SUNRISEp60     50     90     80     80     1      1      5
-SUNRISEp210     100    100    100    20     1      1      30
+SUNRISEp210     100    100    100    20     1      1      55
 
-SUNSETm210    100    100    100    20     1      1      30
+SUNSETm210    100    100    100    20     1      1      55
 SUNSETm60    50     100    80     80     1      1      5
-SUNSETm30    5      70     2      20     0      1      1
+SUNSETm30    5      70     2      20     1      1      1
 SUNSETm0    2      5      1      50     0      0      0.5
 CIVIL_TW_END    0.2    0      0      2      0      0      0
 
