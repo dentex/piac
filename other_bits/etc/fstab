@@ -6,5 +6,3 @@ proc            /proc           proc    defaults          0       0
 #/dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
 
 /dev/mmcblk0p2  /mnt/DATA       ext4    defaults,noatime  0       0
-
-# a swapfile is not a swap partition, so no using swapon|off from here on, use  dphys-swapfile swap[on|off]  for that

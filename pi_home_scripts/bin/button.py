@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 
 import RPi.GPIO as GPIO
 import time
@@ -6,6 +6,12 @@ import os
 import threading
 
 GPIO.setmode(GPIO.BCM)
+
+"""
+short-press:  test (does nothing)
+medium-press: system reboot
+long-press:   system shutdown
+"""
 
 PIN_BTN_1 = 19
 PIN_LED = 26
@@ -32,14 +38,14 @@ def standing_by_blinking():
     time.sleep(1)
     while i < 5:
         if stop_blinking is True:
-            print "stop blinking"
+            print "break standing_by_blinking"
             break
         print "."
         blink(1, 0.1, 1)
         i += 1
 
     if stop_blinking is False:
-        print "time out"
+        print "standing_by_blinking timed out"
 
 
 def waiting_cmd(dur):
@@ -51,8 +57,14 @@ def waiting_cmd(dur):
         print "@@@ executing cmd for btn " + dur + "-press @@@"
         stop_blinking = True
         blink(1, 1, 0)
-        # sleeping simulates a longer cmd
-        time.sleep(5)
+
+        if dur == "medium":
+            print "system reboot..."
+            os.system("/home/pi/bin/piac_halt.sh -r >> /home/pi/log/piac.log 2>&1")
+        elif dur == "long":
+            print "system shutdown..."
+            os.system("/home/pi/bin/piac_halt.sh >> /home/pi/log/piac.log 2>&1")
+
     else:
         print "### btn pressed after time out ###"
         blink(5, 0.1, 0.1)
@@ -76,7 +88,7 @@ try:
 
         if length > 3:
             print "(Long Press)"
-            blink(4, 0.4, 0.2)
+            blink(3, 0.4, 0.2)
             waiting_cmd("long")
 
         elif length > 1:

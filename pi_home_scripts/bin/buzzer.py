@@ -34,7 +34,7 @@ gpio_pin = 21  # change this and choose your preferred GPIO pin
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(gpio_pin, GPIO.OUT)
 
-presets = ['warning', 'single', 'burst']
+presets = ['warning', 'single-long', 'single-short', 'burst']
 
 
 def usage():
@@ -47,9 +47,10 @@ def usage():
     print ''
     print '-r, --recipe            rings the buzzer following a preset;'
     print '                        ignores other options if specified and expects one of the recipes available:'
-    print '                        warning          it\'s like using params -i 4 -d 0.15 -p 0.05 repeated 2 times'
-    print '                        single           it\'s like using params -i 1 -d 1.5 -p 0.1'
-    print '                        burst            it\'s like using params -i 9 -d 0.05 -p 0.05'
+    print '                        warning          using params -i 4 -d 0.15 -p 0.05 repeated 2 times'
+    print '                        single-long      using params -i 1 -d 1.0 -p 0.1'
+    print '                        single-short      using params -i 1 -d 0.2 -p 0.1'
+    print '                        burst            using params -i 9 -d 0.05 -p 0.05'
     print ''
     print '-h, --help              swows this help'
     print ''
@@ -97,14 +98,16 @@ def main():
                 if recipe not in presets:
                     print_warning("No valid recipe specified!")
                 else:
-                    if recipe == presets[0]:  # warning
-                        buzz(4, 0.15, 0.05)
+                    if recipe == presets[0]:
+                        buzz(4, 0.15, 0.05) # ---------------- warning
                         time.sleep(0.25)
                         buzz(4, 0.15, 0.05)
-                    elif recipe == presets[1]:  # single
-                        buzz(1, 1.5, 0.1)
-                    elif recipe == presets[2]:  # burst
-                        buzz(9, 0.05, 0.05)
+                    elif recipe == presets[1]:
+                        buzz(1, 1.0, 0.1) # ------------------ single-long
+                    elif recipe == presets[2]:
+                        buzz(1, 0.2, 0.1) # ------------------ single-short
+                    elif recipe == presets[3]:
+                        buzz(9, 0.05, 0.05) # ---------------- burst
 
                 sys.exit()
 

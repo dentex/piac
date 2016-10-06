@@ -3,7 +3,6 @@
 SC=`basename $0`
 DATE=`date +%Y-%m-%d_%H%M`
 BKP_FILE="/mnt/DATA/piac_backup_$DATE.tar"
-#BKP_FILE="/tmp/piac_backup.tar"
 BKP_DIR="/mnt/DATA/piac_backup"
 
 # Backup folders
@@ -11,6 +10,7 @@ HOME_BIN="/home/pi/bin"
 HOME_LOG="/home/pi/log"
 ETC="/etc"
 CRON="/var/spool/cron"
+BOOT="/boot"
 
 # No network tmp flag
 NNF="/tmp/$SC.nonet"
@@ -35,12 +35,12 @@ function backup_and_compress {
   # storing installed packages list
   dpkg --get-selections > $HOME_LOG/installed-packages.log
 
+  mkdir -p $BKP_DIR/$BOOT $BKP_DIR/$HOME_BIN/ $BKP_DIR/$ETC/ $BKP_DIR/$CRON/ $BKP_DIR/$HOME_LOG
+
   # copying /boot/config.txt
   cp /boot/config.txt $BKP_DIR/boot/config.txt
 
 #  rsync -aAX --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /* "$BKP_DIR"
-
-  mkdir -p $BKP_DIR/$HOME_BIN/ $BKP_DIR/$ETC/ $BKP_DIR/$CRON/ $BKP_DIR/$HOME_LOG
 
   echo -e "$HOME_BIN\n----------------------------------" > $BKP_DIR/CHANGES
   rsync -aAXi --delete $HOME_BIN/ $BKP_DIR/$HOME_BIN >> $BKP_DIR/CHANGES
@@ -72,14 +72,14 @@ function check_network {
 
 function upload {
   echo "[$(date '+%x %X')] [$SC] Starting to upload..."
-  $DROPBOX_UPLOADER -f /home/pi/.dropbox_uploader upload "$BKP_FILE.gz" / > /dev/null
+  $DROPBOX_UPLOADER -f /home/pi/.dropbox_uploader upload "$BKP_FILE.gz" /PiAC > /dev/null
 
   # Check result
   if (( $? )); then
-	  echo "[$(date '+%x %X')] [$SC] Error uploading backup file."
+    echo "[$(date '+%x %X')] [$SC] Error uploading backup file."
   else
-	  echo "[$(date '+%x %X')] [$SC] Success. Cleaning up and closing."
-	  rm -fr "$BKP_FILE.gz"
+    echo "[$(date '+%x %X')] [$SC] Success. Cleaning up and closing."
+    rm -fr "$BKP_FILE.gz"
   fi
 }
 
@@ -93,4 +93,3 @@ FINISH=$(date +%s)
 echo "[$(date '+%x %X')] [$SC] Backup total time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds" | tee $BKP_DIR/BACKUP-DATE
 
 exit 0
-

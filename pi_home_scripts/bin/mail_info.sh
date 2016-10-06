@@ -21,11 +21,11 @@ function sendMail {
 
     if [ "$1" == "no" ]; then
       echo "[$(date '+%x %X')] [$SC] Sending Normal-Ops email... [$C]"
-      source /home/pi/bin/compose_mail_body.sh no .
+      source /home/pi/bin/mail_body_compose.sh no .
       cat /home/pi/log/post_up_mail_body | mail -s "PiAC Normal Ops" samuele.rini76@gmail.com > /dev/null
     else
       echo "[$(date '+%x %X')] [$SC] Sending post-up email... [$C]"
-      source /home/pi/bin/compose_mail_body.sh .
+      source /home/pi/bin/mail_body_compose.sh .
       cat /home/pi/log/post_up_mail_body | mail -s "PiAC Online" samuele.rini76@gmail.com > /dev/null
     fi
 

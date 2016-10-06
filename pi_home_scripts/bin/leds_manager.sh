@@ -4,8 +4,12 @@
 SC=`basename $0`
 
 if [ ! -f /tmp/piac_is_configured ]; then
-  echo -e "[$(date '+%x %X')] [$SC] PiAC is not configured: exiting."
-  exit 1
+  if [ "$1" != "force" ]; then
+    #echo -e "[$(date '+%x %X')] [$SC] PiAC is not configured: exiting."
+    exit 1
+  else 
+    echo "*** PiAC is not configured, but using \"force\" option ***"
+  fi
 fi
 
 # Debug true => more verbose
@@ -40,16 +44,17 @@ for i in `echo ${!h[*]}`; do
   MINUTES[$i]=`echo "${h[$i]}*60+${m[$i]}" | bc`
 done
 
-# Get LED channells' levels
+# Get LED channells' PWM levels (AUX_A for the mini-paludarium)
 COLD=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f2) )
 WARM=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f3) )
 WHITE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f4) )
 BLUE=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f5) )
-AUX=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f8) )
+AUX_A=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f8) )
 
-# Get CO2, LED fans and AUX status
+# Get CO2, LED fans and AUX_B (test-bowls) statuses
 CO2_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f6) )
 FAN_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f7) )
+AUX_B_STATUS=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' '  | cut -d ' ' -f9) )
 
 # For debug only
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* $TT entries:"; fi
@@ -59,85 +64,115 @@ if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${WARM[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${WHITE[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${BLUE[@]}"; fi
 if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${CO2_STATUS[@]}"; fi
-if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${FAN_STATU[@]}"; fi
-if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${AUX[@]}"; fi
+if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${FAN_STATUS[@]}"; fi
+if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${AUX_A[@]}"; fi
+if [ "$DEBUG" = true ]; then echo -e "[$(date '+%x %X')] [$SC]* ${AUX_B_STATUS[@]}"; fi
 
-# Log file to store the last LED channels intensity level
+# Log files to store the last LED channels PWM levels
 COLD_LOG="/home/pi/log/last_leds_channel_cold_level"
 if [ ! -f $COLD_LOG ]; then
   echo "0" > $COLD_LOG
   chmod 666 $COLD_LOG
 fi
-COLD_STORED=`cat $COLD_LOG`
+COLD_STORED=`cat $COLD_LOG 2>/dev/null`
 
 WARM_LOG="/home/pi/log/last_leds_channel_warm_level"
 if [ ! -f $WARM_LOG ]; then
   echo "0" > $WARM_LOG
   chmod 666 $WARM_LOG
 fi
-WARM_STORED=`cat $WARM_LOG`
+WARM_STORED=`cat $WARM_LOG 2>/dev/null`
 
 WHITE_LOG="/home/pi/log/last_leds_channel_white_level"
 if [ ! -f $WHITE_LOG ]; then
   echo "0" > $WHITE_LOG
   chmod 666 $WHITE_LOG
 fi
-WHITE_STORED=`cat $WHITE_LOG`
+WHITE_STORED=`cat $WHITE_LOG 2>/dev/null`
 
 BLUE_LOG="/home/pi/log/last_leds_channel_blue_level"
 if [ ! -f $BLUE_LOG ]; then
   echo "0" > $BLUE_LOG
   chmod 666 $BLUE_LOG
 fi
-BLUE_STORED=`cat $BLUE_LOG`
+BLUE_STORED=`cat $BLUE_LOG 2>/dev/null`
 
 # Log file to store the last CO2 status
-CO2_STATUS_LOG="/home/pi/log/last_co2_status"
-if [ ! -f $CO2_STATUS_LOG ]; then
-  echo "0" > $CO2_STATUS_LOG
-  chmod 666 $CO2_STATUS_LOG
+CO2_LOG="/home/pi/log/last_co2_status"
+if [ ! -f $CO2_LOG ]; then
+  echo "0" > $CO2_LOG
+  chmod 666 $CO2_LOG
 fi
-STORED_CO2_STATUS=`cat $CO2_STATUS_LOG`
+STORED_CO2_STATUS=`cat $CO2_LOG 2>/dev/null`
 
 # Log file to store the last LED fan status
-FAN_STATUS_LOG="/home/pi/log/last_leds_cooling_status"
-if [ ! -f $FAN_STATUS_LOG ]; then
-  echo "0" > $FAN_STATUS_LOG
-  chmod 666 $FAN_STATUS_LOG
+FAN_LOG="/home/pi/log/last_leds_cooling_status"
+if [ ! -f $FAN_LOG ]; then
+  echo "0" > $FAN_LOG
+  chmod 666 $FAN_LOG
 fi
-STORED_FAN_STATUS=`cat $FAN_STATUS_LOG`
+STORED_FAN_STATUS=`cat $FAN_LOG 2>/dev/null`
 
-# Log file to store the last AUX PWM status
-AUX_LOG="/home/pi/log/last_leds_channel_aux_status"
-if [ ! -f $AUX_LOG ]; then
-  echo "0" > $AUX_LOG
-  chmod 666 $AUX_LOG
+# Log file to store the last AUX_A PWM level
+AUX_A_LOG="/home/pi/log/last_aux_A_level"
+if [ ! -f $AUX_A_LOG ]; then
+  echo "0" > $AUX_A_LOG
+  chmod 666 $AUX_A_LOG
 fi
-AUX_STORED=`cat $AUX_LOG`
+AUX_A_STORED=`cat $AUX_A_LOG 2>/dev/null`
 
-# Define the function to switch CO2 electrovalve on/off
+# Log file to store the last AUX_B on/off status
+AUX_B_LOG="/home/pi/log/last_aux_B_status"
+if [ ! -f $AUX_B_LOG ]; then
+  echo "0" > $AUX_B_LOG
+  chmod 666 $AUX_B_LOG
+fi
+STORED_AUX_B_STATUS=`cat $AUX_B_LOG 2>/dev/null`
+
 function writeCo2gpioPin {
   if [ "$1" != "$STORED_CO2_STATUS" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_CO2_STATUS"; fi
 
-    # CO2 gpio pin & temporary linked pot-light pin
+    # CO2 gpio pin
     gpio -g write $co2pin $1
-    gpio -g write $potpin $1
     if [ "$?" -ne 0 ]; then
       echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
       gpio export $co2pin out
-      gpio export $potpin out
 
       gpio -g write $co2pin $1
-      gpio -g write $potpin $1
 
       if [ "$?" -ne 0 ]; then
-        echo $1 > $CO2_STATUS_LOG
+        echo $1 > $CO2_LOG
         echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
       fi
     else
-      echo $1 > $CO2_STATUS_LOG
+      echo $1 > $CO2_LOG
       echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
+    fi
+
+    sleep 1
+  fi
+}
+
+function writeAuxBGpioPin {
+  if [ "$1" != "$STORED_AUX_B_STATUS" ]; then
+    if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored AUX_B status: $STORED_AUX_B_STATUS"; fi
+
+    # pot-light pin
+    gpio -g write $potpin $1
+    if [ "$?" -ne 0 ]; then
+      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
+      gpio export $potpin out
+
+      gpio -g write $potpin $1
+
+      if [ "$?" -ne 0 ]; then
+        echo $1 > $AUX_B_LOG
+        echo "[$(date '+%x %X')] [$SC] Switching AUX_B to status $1"
+      fi
+    else
+      echo $1 > $AUX_B_LOG
+      echo "[$(date '+%x %X')] [$SC] Switching AUX_B to status $1"
     fi
 
     sleep 1
@@ -155,11 +190,11 @@ function writeFanGpioPin {
       gpio export $fanpin out
       gpio -g write $fanpin $1
       if [ "$?" -ne 0 ]; then
-        echo $1 > $FAN_STATUS_LOG
+        echo $1 > $FAN_LOG
         echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
       fi
     else
-      echo $1 > $FAN_STATUS_LOG
+      echo $1 > $FAN_LOG
       echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
     fi
 
@@ -188,6 +223,7 @@ function callServoblaster {
   CHANNEL_LOG=$(eval "echo \$$3_LOG")
 
   if [ "$1" != "$STORED_LEVEL" ]; then
+  	if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* channel log: $CHANNEL_LOG"; fi
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored $3 channell: $STORED_LEVEL"; fi
     echo "[$(date '+%x %X')] [$SC] Setting $3 ch. to $1%"
 
@@ -236,16 +272,16 @@ for i in `echo ${!MINUTES[*]}`; do
 
     blue_value=`interpolate $x1 $blue_y1 $x2 $blue_y2 $M`
 
-    aux_y1=${AUX[$i]}
-    aux_y2=${AUX[$(( $i+1 ))]}
+    auxA_y1=${AUX_A[$i]}
+    auxA_y2=${AUX_A[$(( $i+1 ))]}
 
-    aux_value=`interpolate $x1 $aux_y1 $x2 $aux_y2 $M`
+    auxA_value=`interpolate $x1 $auxA_y1 $x2 $auxA_y2 $M`
 
     callServoblaster $cold_value 2 COLD
     callServoblaster $warm_value 3 WARM
     callServoblaster $white_value 4 WHITE
     callServoblaster $blue_value 0 BLUE
-    callServoblaster $aux_value 5 AUX
+    callServoblaster $auxA_value 5 AUX_A
 
     #echo "[$(date '+%x %X')] [$SC] COLD:$cold_value / WARM:$warm_value / WHITE:$white_value / BLUE:$blue_value"
 
@@ -254,6 +290,9 @@ for i in `echo ${!MINUTES[*]}`; do
 
     coolingFan=${FAN_STATUS[$i]}
     writeFanGpioPin $coolingFan
+
+    auxB=${AUX_B_STATUS[$i]}
+    writeAuxBGpioPin $auxB
 
     exit 0
 

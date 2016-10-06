@@ -3,10 +3,13 @@
 # This script name
 SC=`basename $0`
 
+# LCD delay between *pages*
+t=3
+
 user_interrupt(){
   echo -e "\n\nKeyboard Interrupt detected."
   sleep 1
-  /home/pi/bin/lcd_reset.py
+  /home/pi/bin/lcd_turn_backlight_off.py
   exit 0
 }
 
@@ -21,43 +24,55 @@ function cats {
     gputemp=`/home/pi/bin/get_temp.sh gpu`
 
     casetemp=`/home/pi/bin/get_temp.sh case`
-    lidfan=`cat /home/pi/log/last_fan_step`
-
-    watertemp=`/home/pi/bin/get_temp.sh water`
-    co2raw=`cat /home/pi/log/last_co2_status`
-    if [ "$co2raw" -eq 1 ]; then 
-      co2=ON
-    else
-      co2=OFF
+    lidfan=`cat /home/pi/log/last_fan_step 2>/dev/null`
+    if [ "$lidfan" == "" ]; then
+      lidfan="-"
     fi
 
-    white=`cat /home/pi/log/last_leds_channel_white_level`
-    warm=`cat /home/pi/log/last_leds_channel_warm_level`
+    watertemp=`/home/pi/bin/get_temp.sh water`
+    co2raw=`cat /home/pi/log/last_co2_status 2>/dev/null`
+    if [ "$co2raw" != "" ]; then
+      if [ "$co2raw" -eq 1 ]; then
+        co2=ON
+      else
+        co2=OFF
+      fi
+    else
+      co2="-"
+    fi
 
-    cold=`cat /home/pi/log/last_leds_channel_cold_level`
-    blue=`cat /home/pi/log/last_leds_channel_blue_level`
+    white=`cat /home/pi/log/last_leds_channel_white_level 2>/dev/null`
+    warm=`cat /home/pi/log/last_leds_channel_warm_level 2>/dev/null`
+
+    cold=`cat /home/pi/log/last_leds_channel_cold_level 2>/dev/null`
+    blue=`cat /home/pi/log/last_leds_channel_blue_level 2>/dev/null`
   fi
 }
 
 function print {
-  /home/pi/bin/lcd_print.py -a "CPU Temp: $cputemp" -b "GPU Temp: $gputemp   "
-  /home/pi/bin/lcd_print.py -a "Case Temp: $casetemp" -b "Lid  Fan:  $lidfan%    "
-  /home/pi/bin/lcd_print.py -a "Water Temp: $watertemp" -b "CO2  Valve: $co2         "
-  /home/pi/bin/lcd_print.py -a "White Ch: $white%" -b "Warm  Ch: $warm%    "
-  /home/pi/bin/lcd_print.py -a "Cold Ch: $cold%" -b "Blue Ch: $blue%   "
+  /home/pi/bin/lcd_print.py -x "CPU Temp: $cputemp" -y "GPU Temp: $gputemp   "
+  sleep $t
+  /home/pi/bin/lcd_print.py -x "Case Temp: $casetemp" -y "Lid  Fan:  $lidfan%    "
+  sleep $t
+  /home/pi/bin/lcd_print.py -x "Water Temp: $watertemp" -y "CO2  Valve: $co2         "
+  sleep $t
+  /home/pi/bin/lcd_print.py -x "White Ch: $white%" -y "Warm  Ch: $warm%    "
+  sleep $t
+  /home/pi/bin/lcd_print.py -x "Cold Ch: $cold%" -y "Blue Ch: $blue%   "
+  sleep $t
 
   #if [ "$?" -eq 0 ]; then
     IS_LCD_ON=true
   #fi
 }
 
-while : 
+while :
 do
   # Hour of the day
   H=`date +%H`
 
   # run only from 04:00 to 18:59 UTC
-  if [ "$H" -gt 3 ] && [ "$H" -lt 19 ]; then
+  if [ "$H" -gt 3 ] && [ "$H" -lt 20 ]; then
     cats
     print
   else
