@@ -9,8 +9,8 @@ if ! mkdir /tmp/$SC.lock 2>/dev/null; then
   exit 1
 fi
 
-C=1
-limit=10
+C=0
+limit=5
 NONET=false
 NO=false
 
@@ -48,12 +48,13 @@ else
 fi
 
 while [ "$?" -ne 0 ] || [ "$NONET" = true ]; do 
-  echo "[$(date '+%x %X')] [$SC] Failed. Retrying in 30 sec"
-  sleep 29
+  echo "[$(date '+%x %X')] [$SC] Failed. Retrying in 5 minute."
+  sleep 299
   let C++
   if [ "$C" -ne "$limit" ]; then
     sendMail
   else
+    echo "[$(date '+%x %X')] [$SC] No network connection. Closing."
     close
   fi
 done

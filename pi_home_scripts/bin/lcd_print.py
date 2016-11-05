@@ -18,7 +18,6 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv, 'hidbx:y:', ['help', 'init', 'debug', 'backlightoff', 'string1=', 'string2='])
-
     except getopt.GetoptError:
         usage()
         sys.exit(2)

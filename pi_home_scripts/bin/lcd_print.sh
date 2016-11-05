@@ -72,14 +72,14 @@ do
   H=`date +%H`
 
   # run only from 04:00 to 18:59 UTC
-  if [ "$H" -gt 3 ] && [ "$H" -lt 20 ]; then
+  if [ "$H" -gt 3 ] && [ "$H" -lt 19 ]; then
     cats
     print
   else
     if [ "$IS_LCD_ON" = true ]; then
       /home/pi/bin/lcd_turn_backlight_off.py
       IS_LCD_ON=false
-      sleep 300
     fi
+    sleep 300
   fi
 done

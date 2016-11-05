@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 
 """
 MIT License
@@ -47,10 +47,10 @@ def usage():
     print ''
     print '-r, --recipe            rings the buzzer following a preset;'
     print '                        ignores other options if specified and expects one of the recipes available:'
-    print '                        warning          using params -i 4 -d 0.15 -p 0.05 repeated 2 times'
-    print '                        single-long      using params -i 1 -d 1.0 -p 0.1'
-    print '                        single-short      using params -i 1 -d 0.2 -p 0.1'
-    print '                        burst            using params -i 9 -d 0.05 -p 0.05'
+    print '                        warning          as using params -i 4 -d 0.15 -p 0.05 repeated 2 times'
+    print '                        single-long      as using params -i 1 -d 1.0 -p 0.1'
+    print '                        single-short     as using params -i 1 -d 0.2 -p 0.1'
+    print '                        burst            as using params -i 9 -d 0.05 -p 0.05'
     print ''
     print '-h, --help              swows this help'
     print ''
@@ -76,7 +76,7 @@ def print_warning(msg):
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hr:i:d:p:", ["help", "preset=", "iterations=", "duration=", "pause="])
+        opts, args = getopt.getopt(sys.argv[1:], "hr:i:d:p:", ["help", "recipe=", "iterations=", "duration=", "pause="])
 
         if not opts:
             usage()
@@ -92,7 +92,7 @@ def main():
                 print 'Help:\n'
                 usage()
                 sys.exit()
-            elif opt in ("-r", "--preset"):
+            elif opt in ("-r", "--recipe"):
                 recipe = str(arg)
 
                 if recipe not in presets:

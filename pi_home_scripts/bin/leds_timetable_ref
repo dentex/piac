@@ -11,11 +11,11 @@
 CIVIL_TW_BEG     0      0      0      1      1      0      0      0
 SUNRISEp0     2      5      2      50     1      1      0.5    0
 SUNRISEp30     5      70     5      20     1      1      1      1
-SUNRISEp60     50     90     80     80     1      1      5      1
-SUNRISEp210     100    100    100    20     1      1      55     1
+SUNRISEp60     50     90     80     40     1      1      5      1
+SUNRISEp210     100    100    100    80     1      1      55     1
 
-SUNSETm210    100    100    100    20     1      1      55     1
-SUNSETm60    50     100    80     80     1      1      5      1
+SUNSETm210    100    100    100    80     1      1      55     1
+SUNSETm60    50     100    80     40     1      1      5      1
 SUNSETm30    5      70     2      20     1      1      1      0
 SUNSETm0    2      5      1      50     1      0      0.5    0
 CIVIL_TW_END    0.2    0      0      2      0      0      0      0

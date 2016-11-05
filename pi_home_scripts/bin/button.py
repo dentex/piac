@@ -13,12 +13,12 @@ medium-press: system reboot
 long-press:   system shutdown
 """
 
-PIN_BTN_1 = 19
+PIN_BTN = 19
 PIN_LED = 26
 
 stop_blinking = False
 
-GPIO.setup(PIN_BTN_1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(PIN_BTN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 GPIO.setup(PIN_LED, GPIO.OUT)
 GPIO.output(PIN_LED, 0)
@@ -52,7 +52,7 @@ def waiting_cmd(dur):
     blinking_thread = threading.Thread(target=standing_by_blinking)
     blinking_thread.start()
     global stop_blinking
-    GPIO.wait_for_edge(PIN_BTN_1, GPIO.FALLING)
+    GPIO.wait_for_edge(PIN_BTN, GPIO.FALLING)
     if blinking_thread.is_alive():
         print "@@@ executing cmd for btn " + dur + "-press @@@"
         stop_blinking = True
@@ -72,7 +72,7 @@ def waiting_cmd(dur):
 
 try:
     while True:
-        GPIO.wait_for_edge(PIN_BTN_1, GPIO.FALLING)
+        GPIO.wait_for_edge(PIN_BTN, GPIO.FALLING)
         stop_blinking = False
         blink(1, 0.1, 0)
         print ""
@@ -80,7 +80,7 @@ try:
         start = time.time()
         time.sleep(0.2)
 
-        while GPIO.input(PIN_BTN_1) == GPIO.LOW:
+        while GPIO.input(PIN_BTN) == GPIO.LOW:
             time.sleep(0.02)
 
         length = time.time() - start
