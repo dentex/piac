@@ -240,17 +240,12 @@ def main():
     if debug:
         print '*******************'
         if initFlag:
-            print 'Doing initial init...'
+            print 'Doing initialization...'
         else:
-            print 'Skipping init...'
-
-        print '*******************'
-        print "1=>" + string1
-        print "2=>" + string2
-        print '*******************'
+            print 'Skipping initialization...'
     
     device = lcd(0x27, 1, backlight, initFlag)  
-    device.lcd_puts('Simple Clock:',1)
+    device.lcd_puts('Simple Clock',1)
     sleep(2)
     while True:
         device.lcd_puts(strftime('%d-%b  %H:%M:%S', gmtime()),2)

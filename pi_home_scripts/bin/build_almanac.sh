@@ -2,14 +2,18 @@
 
 SC=`basename $0`
 ALMANAC="/home/pi/almanac"
+BIN="/home/pi/bin"
 
-# Change this according to the desired location:
+# -------------------------------
+# Change this according to the
+# desired location:
 # i.e., for New York
 # LAT=40.712784
 # LNG=-74.005943
+# -------------------------------
+# Home :)
 LAT=`/etc/get_position.sh lat`
 LNG=`/etc/get_position.sh lng`
-
 # -------------------------------
 
 function check_network {

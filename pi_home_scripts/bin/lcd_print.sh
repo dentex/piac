@@ -80,6 +80,6 @@ do
       /home/pi/bin/lcd_turn_backlight_off.py
       IS_LCD_ON=false
     fi
-    sleep 300
+    sleep 600
   fi
 done

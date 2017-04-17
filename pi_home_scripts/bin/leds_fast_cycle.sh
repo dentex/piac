@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TT="/home/pi/bin/leds_timetable"
+TT="/home/pi/bin/timetable"
 
 t8pin=18
 

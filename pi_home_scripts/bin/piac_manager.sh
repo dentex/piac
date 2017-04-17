@@ -7,9 +7,15 @@ if [ ! -f /tmp/piac_is_configured ]; then
   if [ "$1" != "force" ]; then
     #echo -e "[$(date '+%x %X')] [$SC] PiAC is not configured: exiting."
     exit 1
-  else 
+  else
     echo "*** PiAC is not configured, but using \"force\" option ***"
   fi
+fi
+
+if [ -f /tmp/power_saving_mode ]; then
+  POWER_SAVE=true
+else
+  POWER_SAVE=false
 fi
 
 # Debug true => more verbose
@@ -36,7 +42,7 @@ co2pin=23
 fanpin=24
 potpin=25
 
-TT="/home/pi/bin/leds_timetable"
+TT="/home/pi/bin/timetable"
 
 h=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' ' | cut -d ' ' -f1  | cut -d ':' -f1) )
 m=( $(cat $TT | grep -v -e '^\s*$\|#' | tr -s ' ' | cut -d ' ' -f1  | cut -d ':' -f2) )
@@ -133,21 +139,27 @@ function writeCo2gpioPin {
   if [ "$1" != "$STORED_CO2_STATUS" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_CO2_STATUS"; fi
 
-    # CO2 gpio pin
-    gpio -g write $co2pin $1
-    if [ "$?" -ne 0 ]; then
-      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
-      gpio export $co2pin out
+    if [ "$POWER_SAVE" = false ]; then
 
+      # CO2 gpio pin
       gpio -g write $co2pin $1
-
       if [ "$?" -ne 0 ]; then
+        echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
+        gpio export $co2pin out
+
+        gpio -g write $co2pin $1
+
+        if [ "$?" -ne 0 ]; then
+          echo $1 > $CO2_LOG
+          echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
+        fi
+      else
         echo $1 > $CO2_LOG
         echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
       fi
+
     else
       echo $1 > $CO2_LOG
-      echo "[$(date '+%x %X')] [$SC] Switching CO2 to status $1"
     fi
 
     sleep 1
@@ -158,21 +170,26 @@ function writeAuxBGpioPin {
   if [ "$1" != "$STORED_AUX_B_STATUS" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored AUX_B status: $STORED_AUX_B_STATUS"; fi
 
-    # pot-light pin
-    gpio -g write $potpin $1
-    if [ "$?" -ne 0 ]; then
-      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
-      gpio export $potpin out
-
+    if [ "$POWER_SAVE" = false ]; then
+      # pot-light pin
       gpio -g write $potpin $1
-
       if [ "$?" -ne 0 ]; then
+        echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
+        gpio export $potpin out
+
+        gpio -g write $potpin $1
+
+        if [ "$?" -ne 0 ]; then
+          echo $1 > $AUX_B_LOG
+          echo "[$(date '+%x %X')] [$SC] Switching AUX_B to status $1"
+        fi
+      else
         echo $1 > $AUX_B_LOG
         echo "[$(date '+%x %X')] [$SC] Switching AUX_B to status $1"
       fi
+
     else
-      echo $1 > $AUX_B_LOG
-      echo "[$(date '+%x %X')] [$SC] Switching AUX_B to status $1"
+      echo $1 > $CO2_LOG
     fi
 
     sleep 1
@@ -183,19 +200,25 @@ function writeFanGpioPin {
   if [ "$1" != "$STORED_FAN_STATUS" ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC]* Stored CO2 power status: $STORED_FAN_STATUS"; fi
 
-    # LED fan gpio pin
-    gpio -g write $fanpin $1
-    if [ "$?" -ne 0 ]; then
-      echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
-      gpio export $fanpin out
+    if [ "$POWER_SAVE" = false ]; then
+
+      # LED fan gpio pin
       gpio -g write $fanpin $1
       if [ "$?" -ne 0 ]; then
+        echo "[$(date '+%x %X')] [$SC] Failed. Trying another time $1"
+        gpio export $fanpin out
+        gpio -g write $fanpin $1
+        if [ "$?" -ne 0 ]; then
+          echo $1 > $FAN_LOG
+          echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
+        fi
+      else
         echo $1 > $FAN_LOG
         echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
       fi
+
     else
       echo $1 > $FAN_LOG
-      echo "[$(date '+%x %X')] [$SC] Switching LED fan to status $1"
     fi
 
     sleep 1
@@ -233,14 +256,19 @@ function callServoblaster {
       val="$1"
     fi
 
-    echo "$2"="$val" > /dev/servoblaster
-    if [ "$?" -ne 0 ]; then
-      echo "[$(date '+%x %X')] [$SC] Setting $3 channell failed. Exiting"
-      exit 1
+    if [ "$POWER_SAVE" = false ]; then
+
+      echo "$2"="$val" > /dev/servoblaster
+      if [ "$?" -ne 0 ]; then
+        echo "[$(date '+%x %X')] [$SC] Setting $3 channell failed. Exiting"
+        exit 1
+      else
+        echo $1 > $CHANNEL_LOG
+      fi
+
     else
       echo $1 > $CHANNEL_LOG
     fi
-
   fi
 }
 

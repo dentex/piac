@@ -14,15 +14,15 @@ DEBUG=false
 MAX_T="75"
 
 # Temperature steps - 'normal' profile
-STEP_1_T="44"
-STEP_2_T="46"
-STEP_3_T="52"
+STEP_1_T="41"
+STEP_2_T="42"
+STEP_3_T="44"
 
 # Default profile
 P="normal"
 
 # Quiter profile temperature steps increment
-qi=3
+qi=2
 
 # Hour of the day
 H=`date +%H`

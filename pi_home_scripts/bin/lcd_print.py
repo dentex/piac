@@ -41,9 +41,9 @@ def main(argv):
     if debug:
         print '*******************'
         if initFlag:
-            print 'Doing initial init...'
+            print 'Doing initialization...'
         else:
-            print 'Skipping init...'
+            print 'Skipping initialization...'
 
         print '*******************'
         print "1=>" + string1
@@ -53,7 +53,7 @@ def main(argv):
     device = lcdui.lcd(0x27, 1, backlight, initFlag)
 
     device.lcd_puts(string1, 1)
-    sleep(0.1)
+    #sleep(0.1)
     device.lcd_puts(string2, 2)
 
 
