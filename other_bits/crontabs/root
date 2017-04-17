@@ -36,7 +36,7 @@ PIAC_LOG=/home/pi/log/piac.log
 
 */3 * * * * sleep 10 && lid_fan_manager.sh >> $PIAC_LOG 2>&1
 
-* * * * * leds_manager.sh >> $PIAC_LOG 2>&1
+* * * * * piac_manager.sh >> $PIAC_LOG 2>&1
 * * * * * sleep 15 && dweet_to_freeboard.sh > /dev/null 2>&1
 
 #disabled due to webcam malfunction
@@ -46,4 +46,7 @@ PIAC_LOG=/home/pi/log/piac.log
 #00 17 * * 0 light_sim.sh >> $PIAC_LOG 2>&1
 
 #normal operations e-mail
-00 */4 * * * mail_info.sh no >> $PIAC_LOG 2>&1
+00 */4 * * * sleep 30 && mail_info.sh no >> $PIAC_LOG 2>&1
+
+#*/10 * * * * sleep 20 && sgs2_check_batt.sh >> $PIAC_LOG 2>&1
+
