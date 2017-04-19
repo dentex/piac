@@ -4,7 +4,7 @@
 SC=`basename $0`
 
 # Debug true => more verbose
-DEBUG=false
+DEBUG=true
 
 # GPIO pin to use
 pin=23
@@ -18,10 +18,11 @@ attempt_file="/home/pi/log/sgs2_ssh_attempts"
 max_attempts=6
 
 if [ -f $attempt_file ]; then
-   attempt=`cat $attempt_file`
+    attempt=`cat $attempt_file`
 else
-   echo 0 > $attempt_file
-   attempt=0
+    echo 0 > $attempt_file
+    chmod 666 $attempt_file
+    attempt=0
 fi
 
 # SGS2's wall charger status (0/1, on/off)
@@ -32,18 +33,19 @@ batt=`ssh root@sgs2 -p 22220 -q 'cat /sys/class/power_supply/battery/capacity'`
 
 if [ "$?" -ne 0 ]; then
     if [ "$DEBUG" = true ]; then echo "[$(date '+%x %X')] [$SC] Exiting due to ssh error"; fi
+
     let attempt++
     echo $attempt > $attempt_file
 
     if [ $pins_status -eq 1 ] && [ $attempt -ge $max_attempts ]; then
 	    echo "[$(date '+%x %X')] [$SC] Switching charger off due to $max_attempts subsequent ssh errors"
         gpio -g write $pin 0
+	    echo 0 > $attempt_file
     fi
 
     exit 1
 else
    echo 0 > $attempt_file
-   attempt=0
 fi
 
 # Main script

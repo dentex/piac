@@ -17,7 +17,7 @@ LNG=`/etc/get_position.sh lng`
 # -------------------------------
 
 function check_network {
-  ping -c 1 -w 3 8.8.8.8 > /dev/null 2>&1
+  ping -q -c 1 -w 3 8.8.8.8 > /dev/null 2>&1
   if [ "$?" -ne 0 ]; then
     echo "[$(date '+%x %X')] [$SC] No network connection. Aborting."
     exit 1
